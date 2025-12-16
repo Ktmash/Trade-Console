@@ -3155,7 +3155,7 @@ function renderFail() {
     function openTagSettings() {
       const current = (settings.tagSuggestions && Array.isArray(settings.tagSuggestions))
         ? settings.tagSuggestions.join(", ")
-        : "ORB","A+ setup","News day","FOMO","Overtraded","Rule break";
+        : ["ORB","A+ setup","News day","FOMO","Overtraded","Rule break"];
       const next = window.prompt("Edit default tag suggestions (comma-separated):", current);
       if (next === null) return;
       const arr = next.split(",").map(s => s.trim()).filter(Boolean);
