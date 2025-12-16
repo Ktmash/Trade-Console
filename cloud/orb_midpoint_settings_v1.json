@@ -6,7 +6,7 @@
       "id": "MES",
       "label": "MES (Micro ES)",
       "tickSize": 0.25,
-      "tickValue": 1.25
+      "tickValue": 1.2
     },
     {
       "id": "MNQ",
@@ -21,7 +21,7 @@
       "tickValue": 1
     }
   ],
-  "lastInstrumentId": "",
+  "lastInstrumentId": "MES",
   "tagSuggestions": [
     "ORB",
     "A+ setup",
