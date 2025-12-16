@@ -40,7 +40,7 @@
           "id": 1,
           "section": "Fundamental Analysis",
           "text": "Is there any News today that could effect the Market or Trade?",
-          "hardStop": false,
+          "hardStop": true,
           "failOn": "yes"
         },
         {
