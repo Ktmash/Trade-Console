@@ -169,6 +169,11 @@
       color: #fecaca;
       border: 1px solid rgba(248,113,113,0.4);
     }
+    .status-warn {
+      background: rgba(56,189,248,0.08);
+      color: #bae6fd;
+      border: 1px solid rgba(56,189,248,0.35);
+    }
     .summary {
       font-size: 0.9rem;
       color: #9ca3af;
@@ -442,6 +447,8 @@
         <button id="homeTopBtn" class="secondary small" type="button" onclick="renderHome()">Home</button>
       </div>
 
+      <div id="cloudStatusContainer"></div>
+
       <div id="statusContainer"></div>
 
       <div class="progress-bar">
@@ -625,6 +632,253 @@
     const progressLabel = document.getElementById("progressLabel");
     const sectionLabel = document.getElementById("sectionLabel");
     const statusContainer = document.getElementById("statusContainer");
+    const cloudStatusContainer = document.getElementById("cloudStatusContainer");
+
+    const CLOUD_ENDPOINTS = {
+      ping: "/api/cloud/ping",
+      settings: "/api/cloud/settings",
+      trades: "/api/cloud/trades"
+    };
+
+    let cloudEnabled = true;
+    let cloudKey = "";
+    let cloudMuteSaves = false;
+    let cloudSaveSettingsTimer = null;
+    let cloudSaveTradesTimer = null;
+
+    let cloudState = {
+      status: "init", // init | syncing | ok | error | off
+      message: "Connecting…",
+      lastSync: null,
+      lastError: null,
+      requiresKey: false
+    };
+
+    function loadCloudPrefs() {
+      try {
+        cloudEnabled = localStorage.getItem("orb_midpoint_cloud_enabled_v1") !== "off";
+        cloudKey = localStorage.getItem("orb_midpoint_cloud_key_v1") || "";
+      } catch (e) {}
+    }
+
+    function saveCloudPrefs() {
+      try {
+        localStorage.setItem("orb_midpoint_cloud_enabled_v1", cloudEnabled ? "on" : "off");
+        localStorage.setItem("orb_midpoint_cloud_key_v1", cloudKey || "");
+      } catch (e) {}
+    }
+
+    function cloudHeaders() {
+      const h = { "Content-Type": "application/json" };
+      if (cloudKey) h["X-Sync-Key"] = cloudKey;
+      return h;
+    }
+
+    function setCloudStatus(status, message, err) {
+      cloudState.status = status;
+      if (message) cloudState.message = message;
+      cloudState.lastError = err ? (err.message || String(err)) : null;
+      renderCloudStatus();
+    }
+
+    function renderCloudStatus() {
+      if (!cloudStatusContainer) return;
+      cloudStatusContainer.innerHTML = "";
+
+      const pill = document.createElement("div");
+      let cls = "status-pill";
+      if (!cloudEnabled || cloudState.status === "off") cls = "status-pill";
+      else if (cloudState.status === "ok") cls = "status-pill status-ok";
+      else if (cloudState.status === "error") cls = "status-pill status-fail";
+      else cls = "status-pill status-warn";
+
+      pill.className = cls;
+
+      const last = cloudState.lastSync ? new Date(cloudState.lastSync).toLocaleString() : "";
+      const msg = cloudEnabled ? (cloudState.message || "…") : "OFF";
+      const hint = cloudEnabled && last ? `<span style="color:#9ca3af;"> • ${last}</span>` : "";
+
+      pill.innerHTML = `
+        <span><strong>Cloud Sync:</strong> ${msg}${hint}</span>
+        <span style="margin-left:auto;display:inline-flex;gap:0.35rem;align-items:center;">
+          <button class="secondary small" type="button" id="cloudSyncNowBtn">Sync</button>
+          <button class="secondary small" type="button" id="cloudKeyBtn">Key</button>
+          <button class="secondary small" type="button" id="cloudToggleBtn">${cloudEnabled ? "Off" : "On"}</button>
+        </span>
+      `;
+
+      cloudStatusContainer.appendChild(pill);
+
+      const syncBtn = document.getElementById("cloudSyncNowBtn");
+      if (syncBtn) {
+        syncBtn.onclick = () => {
+          if (!cloudEnabled) return;
+          cloudSyncNow();
+        };
+      }
+
+      const toggleBtn = document.getElementById("cloudToggleBtn");
+      if (toggleBtn) {
+        toggleBtn.onclick = () => {
+          cloudEnabled = !cloudEnabled;
+          saveCloudPrefs();
+          if (!cloudEnabled) {
+            setCloudStatus("off", "OFF");
+          } else {
+            setCloudStatus("init", "Connecting…");
+            bootstrapCloudSync();
+          }
+        };
+      }
+
+      const keyBtn = document.getElementById("cloudKeyBtn");
+      if (keyBtn) {
+        keyBtn.onclick = () => {
+          const existing = cloudKey || "";
+          const entered = prompt("Cloud Sync Key (leave blank if not using one):", existing);
+          if (entered === null) return;
+          cloudKey = String(entered || "").trim();
+          saveCloudPrefs();
+          cloudSyncNow();
+        };
+      }
+
+      // Show error details (tiny) if we have them.
+      if (cloudEnabled && cloudState.lastError && cloudState.status === "error") {
+        const errLine = document.createElement("div");
+        errLine.style.marginTop = "0.35rem";
+        errLine.style.fontSize = "0.7rem";
+        errLine.style.color = "#9ca3af";
+        errLine.textContent = cloudState.lastError;
+        cloudStatusContainer.appendChild(errLine);
+      }
+    }
+
+    async function cloudPing() {
+      const res = await fetch(CLOUD_ENDPOINTS.ping, { headers: cloudHeaders(), cache: "no-store" });
+      if (!res.ok) {
+        const t = await res.text().catch(() => "");
+        throw new Error(`Cloud ping failed (${res.status}): ${t}`);
+      }
+      const j = await res.json();
+      cloudState.requiresKey = !!j.requiresKey;
+      return j;
+    }
+
+    async function cloudGetJson(url) {
+      const res = await fetch(url, { headers: cloudHeaders(), cache: "no-store" });
+      if (!res.ok) {
+        const t = await res.text().catch(() => "");
+        throw new Error(`Cloud GET failed (${res.status}): ${t}`);
+      }
+      return res.json();
+    }
+
+    async function cloudPutJson(url, payload) {
+      const res = await fetch(url, { method: "PUT", headers: cloudHeaders(), body: JSON.stringify({ data: payload }) });
+      if (!res.ok) {
+        const t = await res.text().catch(() => "");
+        throw new Error(`Cloud PUT failed (${res.status}): ${t}`);
+      }
+      return res.json();
+    }
+
+    async function cloudLoadAll() {
+      const [cloudSettings, cloudTrades] = await Promise.all([
+        cloudGetJson(CLOUD_ENDPOINTS.settings),
+        cloudGetJson(CLOUD_ENDPOINTS.trades)
+      ]);
+      return { cloudSettings, cloudTrades };
+    }
+
+    async function cloudSaveSettingsNow() {
+      if (!cloudEnabled || cloudMuteSaves) return;
+      await cloudPutJson(CLOUD_ENDPOINTS.settings, settings);
+    }
+
+    async function cloudSaveTradesNow() {
+      if (!cloudEnabled || cloudMuteSaves) return;
+      await cloudPutJson(CLOUD_ENDPOINTS.trades, tradeHistory);
+    }
+
+    function scheduleCloudSaveSettings() {
+      if (!cloudEnabled || cloudMuteSaves) return;
+      if (cloudSaveSettingsTimer) clearTimeout(cloudSaveSettingsTimer);
+      cloudSaveSettingsTimer = setTimeout(async () => {
+        try {
+          setCloudStatus("syncing", "Syncing…");
+          await cloudSaveSettingsNow();
+          cloudState.lastSync = new Date().toISOString();
+          setCloudStatus("ok", "Up to date");
+        } catch (e) {
+          setCloudStatus("error", "Sync error", e);
+        }
+      }, 1200);
+    }
+
+    function scheduleCloudSaveTrades() {
+      if (!cloudEnabled || cloudMuteSaves) return;
+      if (cloudSaveTradesTimer) clearTimeout(cloudSaveTradesTimer);
+      cloudSaveTradesTimer = setTimeout(async () => {
+        try {
+          setCloudStatus("syncing", "Syncing…");
+          await cloudSaveTradesNow();
+          cloudState.lastSync = new Date().toISOString();
+          setCloudStatus("ok", "Up to date");
+        } catch (e) {
+          setCloudStatus("error", "Sync error", e);
+        }
+      }, 1200);
+    }
+
+    async function cloudSyncNow() {
+      if (!cloudEnabled) return;
+      try {
+        setCloudStatus("syncing", "Syncing…");
+        await cloudPing();
+        const { cloudSettings, cloudTrades } = await cloudLoadAll();
+
+        // Apply cloud → local (source of truth)
+        cloudMuteSaves = true;
+        if (cloudSettings && typeof cloudSettings === "object") {
+          settings = Object.assign(settings, cloudSettings);
+          if (!Array.isArray(settings.instruments)) settings.instruments = [];
+          ensureDefaultInstruments();
+          ensureDefaultChecklists();
+          normalizeChecklists();
+          saveSettings(true);
+        }
+        if (Array.isArray(cloudTrades)) {
+          tradeHistory = cloudTrades;
+          saveTradeHistory(true);
+        }
+        cloudMuteSaves = false;
+
+        renderTradeHistory();
+        renderInstrumentSettings();
+        renderHome();
+
+        cloudState.lastSync = new Date().toISOString();
+        setCloudStatus("ok", "Up to date");
+      } catch (e) {
+        setCloudStatus("error", "Sync error", e);
+      }
+    }
+
+    async function bootstrapCloudSync() {
+      loadCloudPrefs();
+      renderCloudStatus();
+      if (!cloudEnabled) {
+        setCloudStatus("off", "OFF");
+        return;
+      }
+      if (typeof navigator !== "undefined" && navigator.onLine === false) {
+        setCloudStatus("error", "Offline");
+        return;
+      }
+      // Initial sync
+      await cloudSyncNow();
+    }
 
     function ensureDefaultInstruments() {
       if (!Array.isArray(settings.instruments) || !settings.instruments.length) {
@@ -790,11 +1044,14 @@ function normalizeChecklists() {
       normalizeChecklists();
     }
 
-    function saveSettings() {
+    function saveSettings(skipCloud) {
       try {
         localStorage.setItem("orb_midpoint_settings_v1", JSON.stringify(settings));
       } catch (e) {
         console.warn("Could not save settings", e);
+      }
+      if (!skipCloud) {
+        try { scheduleCloudSaveSettings(); } catch (e) {}
       }
     }
 
@@ -858,11 +1115,14 @@ function normalizeChecklists() {
       }
     }
 
-    function saveTradeHistory() {
+    function saveTradeHistory(skipCloud) {
       try {
         localStorage.setItem("orb_midpoint_trades_v1", JSON.stringify(tradeHistory));
       } catch (e) {
         console.warn("Could not save trade history", e);
+      }
+      if (!skipCloud) {
+        try { scheduleCloudSaveTrades(); } catch (e) {}
       }
     }
 
@@ -3422,6 +3682,8 @@ const trade = {
     renderTradeHistory();
     renderInstrumentSettings();
     renderHome();
+    // Cloud Sync (GitHub-backed)
+    bootstrapCloudSync();
 
     const importInput = document.getElementById("importFile");
     if (importInput) {
