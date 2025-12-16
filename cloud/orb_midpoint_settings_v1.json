@@ -1,6 +1,6 @@
 {
   "dollarsPerR": 50,
-  "pnlBlurred": true,
+  "pnlBlurred": false,
   "instruments": [
     {
       "id": "MES",
