@@ -6,7 +6,7 @@
       "id": "MES",
       "label": "MES (Micro ES)",
       "tickSize": 0.25,
-      "tickValue": 1.2
+      "tickValue": 1.25
     },
     {
       "id": "MNQ",
