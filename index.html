@@ -191,6 +191,9 @@
     }
     .summary-item span.answer-yes { color: #bbf7d0; }
     .summary-item span.answer-no { color: #fecaca; }
+    .summary-item span.answer-pass { color: #bbf7d0; }
+    .summary-item span.answer-fail { color: #fecaca; font-weight: 600; }
+    .summary-item span.answer-na { color: #9ca3af; }
     .tip {
       margin-top: 0.75rem;
       font-size: 0.8rem;
@@ -599,6 +602,18 @@
       if (homeBtn) {
         homeBtn.style.display = isHome ? "none" : "inline-flex";
       }
+    
+      const cloud = document.getElementById("cloudStatusContainer");
+      if (cloud) {
+        cloud.style.display = isHome ? "block" : "none";
+      }
+
+      // On the Home screen, the progress UI just adds clutter (Ready/Home pills).
+      const progressBarEl = document.querySelector(".progress-bar");
+      const progressTextEl = document.querySelector(".progress-text");
+      if (progressBarEl) progressBarEl.style.display = isHome ? "none" : "block";
+      if (progressTextEl) progressTextEl.style.display = isHome ? "none" : "flex";
+
     }
 
     let settings = {
@@ -2644,7 +2659,7 @@ function startEditTrade(id) {
     function updateProgress() {
       if (!checklistActive) {
         progressFill.style.width = "0%";
-        progressLabel.textContent = "Cloud sync: Import latest JSON before trading and export updated JSON after your session.";
+        progressLabel.textContent = "";
         sectionLabel.textContent = "";
         return;
       }
@@ -2681,7 +2696,6 @@ function startEditTrade(id) {
       }
 
       questionArea.innerHTML = `
-        <div class="section-label">Home</div>
         <div class="question-text">
           Choose a checklist to run for this trade, or skip straight to journaling.
         </div>
@@ -3099,10 +3113,12 @@ function renderQuestion() {
 
       if (storedAnswer) {
         const statusPill = document.createElement("div");
-        statusPill.className = "status-pill " + (storedAnswer === "yes" ? "status-ok" : "status-fail");
+        const failOn = (q && typeof q.failOn === "string") ? q.failOn : "no";
+        const storedIsFail = storedAnswer === failOn;
+        statusPill.className = "status-pill " + (storedIsFail ? "status-fail" : "status-ok");
         statusPill.innerHTML = storedAnswer === "yes"
-          ? "Last answer for this question: Yes"
-          : "Last answer for this question: No";
+          ? ("Last answer for this question: Yes" + (storedIsFail ? " (fails rule)" : ""))
+          : ("Last answer for this question: No" + (storedIsFail ? " (fails rule)" : ""));
         statusContainer.appendChild(statusPill);
       }
     }
@@ -3330,12 +3346,17 @@ function renderFail() {
       const summaryWrapper = document.getElementById("summaryWrapper");
       if (fromChecklist && summaryWrapper) {
         currentQuestions.forEach((q, idx) => {
-          const ans = answers[idx] || "not answered";
+          const ansRaw = answers[idx];
+          const ans = ansRaw || "not answered";
+          const failOn = (q && typeof q.failOn === "string") ? q.failOn : "no";
+          const isFail = ansRaw === failOn;
+          const ansClass = ansRaw ? (isFail ? "answer-fail" : "answer-pass") : "answer-na";
+
           const div = document.createElement("div");
           div.className = "summary-item";
           div.innerHTML = `
             <span>${idx + 1}. ${q.section}</span>
-            <span class="${ans === 'yes' ? 'answer-yes' : ans === 'no' ? 'answer-no' : ''}">${ans}</span>
+            <span class="${ansClass}">${ans}</span>
           `;
           summaryWrapper.appendChild(div);
         });
@@ -3696,3 +3717,4 @@ const trade = {
   </script>
 </body>
 </html>
+
