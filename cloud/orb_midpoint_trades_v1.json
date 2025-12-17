@@ -1,5 +1,88 @@
 [
   {
+    "id": 1765931802918,
+    "timestamp": "2025-12-11T16:15:00.000Z",
+    "symbol": "MES",
+    "direction": "Short",
+    "instrumentId": "MES",
+    "contracts": 2,
+    "entry": "6870",
+    "sl": "6882",
+    "tp1": "6850",
+    "tp2": null,
+    "result": "Win",
+    "rMultiple": null,
+    "pnl": 200,
+    "notes": "A+ Setup on Midpoint ORB, Targeting London and Asia Session lows for a 1/4 RR,I did Fomo into another Contract right before my Limit order at the mid point was hit, Probably should have waited for the Limit order. Ended up trailing my stop down and got filled for basically a 1/2 RR before price shot right back up past my initial SL",
+    "tags": [
+      "ORB",
+      "A+ setup",
+      "Trailing Stop",
+      "FOMO"
+    ],
+    "checklistKey": "orb",
+    "checklistName": "ORB Midpoint Checklist",
+    "checklistScore": 100,
+    "checklistSnapshot": [
+      {
+        "idx": 1,
+        "id": 1,
+        "section": "Fundamental Analysis",
+        "text": "Is there any News today that could effect the Market or Trade?",
+        "hardStop": false,
+        "failOn": "yes",
+        "answer": "no"
+      },
+      {
+        "idx": 2,
+        "id": 2,
+        "section": "Psychology",
+        "text": "Are you prepared to risk 1-2% and withen the weekly 3% drawdown?",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 3,
+        "id": 3,
+        "section": "Bias & Confluence",
+        "text": "Do you have at least one Confluence to work with?",
+        "hardStop": false,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 4,
+        "id": 4,
+        "section": "Timing & Entry",
+        "text": "Are we withen the preperation window 8:00 - 9:30EST?",
+        "hardStop": false,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 5,
+        "id": 5,
+        "section": "Execution Prep",
+        "text": "Are your stop-loss and take-profit orders prepared? (1/4 RR, At minimum 1/2 RR)",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 6,
+        "id": 6,
+        "section": "Entry Trigger",
+        "text": "At or near the midpoint, Do you see a valid Re-Test Confirmation forming?",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      }
+    ],
+    "checklistPassed": true,
+    "failReason": null
+  },
+  {
     "id": 1765931712433,
     "timestamp": "2025-12-16T14:50:00.000Z",
     "symbol": "MES",
