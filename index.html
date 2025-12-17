@@ -2201,7 +2201,21 @@ function saveInstrumentsFromDOM() {
         </div>
       `;
 
-      tradeHistory.forEach(trade => {
+      // Display newest trade first based on the trade timestamp (the date/time you input),
+      // not the time you clicked "Save".
+      const tradeTimeValue = (t) => {
+        if (!t) return 0;
+        const ts = t.timestamp ? Date.parse(t.timestamp) : NaN;
+        if (isFinite(ts)) return ts;
+        // Fallbacks for older/migrated shapes
+        const alt = t.time || t.date || t.datetime || t.dateTime;
+        const ts2 = alt ? Date.parse(alt) : NaN;
+        return isFinite(ts2) ? ts2 : 0;
+      };
+
+      const tradesSorted = [...tradeHistory].sort((a, b) => tradeTimeValue(b) - tradeTimeValue(a));
+
+      tradesSorted.forEach(trade => {
         let cls = "";
         const status = trade.checklistPassed;
         if (status === false) {
