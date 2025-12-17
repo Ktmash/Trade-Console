@@ -3162,6 +3162,8 @@ function renderFail() {
       setHomeMode(false);
       const answeredCount = answers.filter(a => a !== null).length;
 
+      const nowLocal = toDatetimeLocalValue(new Date());
+
       questionArea.innerHTML = `
         <div class="section-label">Failed Rules</div>
         <div class="question-text">
@@ -3178,6 +3180,10 @@ function renderFail() {
         <div class="journal-form">
           <div style="font-size:0.9rem;color:#e5e7eb;margin-bottom:0.5rem;">Log as Skipped / Rule-Break</div>
           <div class="journal-grid">
+            <div>
+              <label for="failTimestamp">Date & Time</label>
+              <input id="failTimestamp" type="datetime-local" value="${nowLocal}" />
+            </div>
             <div>
               <label for="failSymbol">Symbol</label>
               <input id="failSymbol" type="text" placeholder="MESZ5" />
@@ -3247,7 +3253,18 @@ function renderFail() {
       }
     }
 
-    function renderJournalScreen(fromChecklist) {
+    
+    function toDatetimeLocalValue(date) {
+      const pad = (n) => String(n).padStart(2, "0");
+      const yyyy = date.getFullYear();
+      const mm = pad(date.getMonth() + 1);
+      const dd = pad(date.getDate());
+      const hh = pad(date.getHours());
+      const mi = pad(date.getMinutes());
+      return `${yyyy}-${mm}-${dd}T${hh}:${mi}`;
+    }
+
+function renderJournalScreen(fromChecklist) {
       setHomeMode(false);
       const headerLabel = fromChecklist ? "Checklist Passed" : "Journal Only";
       const message = fromChecklist
@@ -3255,6 +3272,8 @@ function renderFail() {
         : "✏️ Journal-only entry.<br/><br/>Use this to log trades when you didn\u2019t use the checklist (for example, backfilling past trades).";
 
       const instrumentOptions = getInstrumentOptionsHtml(settings.lastInstrumentId || "");
+
+      const nowLocal = toDatetimeLocalValue(new Date());
 
       questionArea.innerHTML = `
         <div class="section-label">${headerLabel}</div>
@@ -3265,6 +3284,10 @@ function renderFail() {
         <div class="journal-form">
           <div style="font-size:0.9rem;color:#e5e7eb;margin-bottom:0.5rem;">Trade Journal</div>
           <div class="journal-grid">
+            <div>
+              <label for="journalTimestamp">Date & Time</label>
+              <input id="journalTimestamp" type="datetime-local" value="${nowLocal}" />
+            </div>
             <div>
               <label for="journalDirection">Direction</label>
               <select id="journalDirection">
@@ -3569,6 +3592,14 @@ function attachJournalInputListeners() {
       const pnlStr = document.getElementById("journalPnL").value;
       const notes = document.getElementById("journalNotes").value.trim();
 
+      const tsVal = (document.getElementById("journalTimestamp") || {}).value || "";
+      let timestamp = null;
+      if (tsVal) {
+        const d = new Date(tsVal);
+        if (!isNaN(d.getTime())) timestamp = d.toISOString();
+      }
+      if (!timestamp) timestamp = new Date().toISOString();
+
       if (!direction) {
         alert("Please at least fill Direction.");
         return;
@@ -3617,7 +3648,7 @@ function attachJournalInputListeners() {
 
 const trade = {
         id: Date.now(),
-        timestamp: new Date().toISOString(),
+        timestamp,
         symbol: instrumentId || null,
         direction,
         instrumentId: instrumentId || null,
@@ -3656,6 +3687,14 @@ function saveJournalFromFail() {
       const result = document.getElementById("failResult").value;
       const notes = document.getElementById("failNotes").value.trim();
 
+      const tsVal = (document.getElementById("failTimestamp") || {}).value || "";
+      let timestamp = null;
+      if (tsVal) {
+        const d = new Date(tsVal);
+        if (!isNaN(d.getTime())) timestamp = d.toISOString();
+      }
+      if (!timestamp) timestamp = new Date().toISOString();
+
       if (!symbol && !direction && !notes) {
         alert("Add at least some details before saving.");
         return;
@@ -3671,7 +3710,7 @@ function saveJournalFromFail() {
 
 const trade = {
         id: Date.now(),
-        timestamp: new Date().toISOString(),
+        timestamp,
         symbol,
         direction,
         instrumentId: null,
