@@ -80,7 +80,8 @@
       }
     ],
     "checklistPassed": true,
-    "failReason": null
+    "failReason": null,
+    "updatedAt": "2025-12-11T16:15:00.000Z"
   },
   {
     "id": 1765931712433,
@@ -163,6 +164,7 @@
       }
     ],
     "checklistPassed": true,
-    "failReason": null
+    "failReason": null,
+    "updatedAt": "2025-12-16T14:50:00.000Z"
   }
 ]
