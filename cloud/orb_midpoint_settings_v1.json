@@ -29,7 +29,8 @@
     "News day",
     "FOMO",
     "Overtraded",
-    "Rule break"
+    "Rule break",
+    "B- Setup"
   ],
   "checklists": [
     {
@@ -123,5 +124,5 @@
     }
   ],
   "lastChecklistKey": "orb",
-  "updatedAt": "2025-12-22T21:07:08.409Z"
+  "updatedAt": "2025-12-22T21:10:05.492Z"
 }
