@@ -682,6 +682,29 @@
       try {
         const k = (kind === "settings") ? CLOUD_DIRTY_SETTINGS_KEY : CLOUD_DIRTY_TRADES_KEY;
         localStorage.setItem(k, dirty ? "1" : "0");
+
+      // Post-load migrations (keeps older JSON compatible with new fields)
+      tradeHistory = upgradeTradesArray(tradeHistory);
+      (tradeHistory || []).forEach(t => {
+        if (!t || typeof t !== "object") return;
+
+        // Default pnlSource for older trades: assume manual if a PnL exists.
+        if (t.pnlSource === undefined || t.pnlSource === null || t.pnlSource === "") {
+          if (t.pnl !== null && t.pnl !== undefined && t.pnl !== "") t.pnlSource = "manual";
+        }
+
+        // Fill commission from instrument settings if missing (does NOT change PnL).
+        if ((t.commission === undefined || t.commission === null || t.commission === "") &&
+            t.instrumentId && t.commissionSource !== "import") {
+          const qty = t.contracts || 1;
+          const c = computeDefaultCommission(t.instrumentId, qty);
+          if (isFinite(c)) {
+            t.commission = c;
+            t.commissionSource = "instrument";
+          }
+        }
+      });
+
       } catch (e) {}
     }
 
@@ -689,6 +712,29 @@
       try {
         const k = (kind === "settings") ? CLOUD_DIRTY_SETTINGS_KEY : CLOUD_DIRTY_TRADES_KEY;
         return localStorage.getItem(k) === "1";
+
+      // Post-load migrations (keeps older JSON compatible with new fields)
+      tradeHistory = upgradeTradesArray(tradeHistory);
+      (tradeHistory || []).forEach(t => {
+        if (!t || typeof t !== "object") return;
+
+        // Default pnlSource for older trades: assume manual if a PnL exists.
+        if (t.pnlSource === undefined || t.pnlSource === null || t.pnlSource === "") {
+          if (t.pnl !== null && t.pnl !== undefined && t.pnl !== "") t.pnlSource = "manual";
+        }
+
+        // Fill commission from instrument settings if missing (does NOT change PnL).
+        if ((t.commission === undefined || t.commission === null || t.commission === "") &&
+            t.instrumentId && t.commissionSource !== "import") {
+          const qty = t.contracts || 1;
+          const c = computeDefaultCommission(t.instrumentId, qty);
+          if (isFinite(c)) {
+            t.commission = c;
+            t.commissionSource = "instrument";
+          }
+        }
+      });
+
       } catch (e) { return false; }
     }
 
@@ -712,6 +758,29 @@
       try {
         cloudEnabled = localStorage.getItem("orb_midpoint_cloud_enabled_v1") !== "off";
         cloudKey = localStorage.getItem("orb_midpoint_cloud_key_v1") || "";
+
+      // Post-load migrations (keeps older JSON compatible with new fields)
+      tradeHistory = upgradeTradesArray(tradeHistory);
+      (tradeHistory || []).forEach(t => {
+        if (!t || typeof t !== "object") return;
+
+        // Default pnlSource for older trades: assume manual if a PnL exists.
+        if (t.pnlSource === undefined || t.pnlSource === null || t.pnlSource === "") {
+          if (t.pnl !== null && t.pnl !== undefined && t.pnl !== "") t.pnlSource = "manual";
+        }
+
+        // Fill commission from instrument settings if missing (does NOT change PnL).
+        if ((t.commission === undefined || t.commission === null || t.commission === "") &&
+            t.instrumentId && t.commissionSource !== "import") {
+          const qty = t.contracts || 1;
+          const c = computeDefaultCommission(t.instrumentId, qty);
+          if (isFinite(c)) {
+            t.commission = c;
+            t.commissionSource = "instrument";
+          }
+        }
+      });
+
       } catch (e) {}
     }
 
@@ -719,6 +788,29 @@
       try {
         localStorage.setItem("orb_midpoint_cloud_enabled_v1", cloudEnabled ? "on" : "off");
         localStorage.setItem("orb_midpoint_cloud_key_v1", cloudKey || "");
+
+      // Post-load migrations (keeps older JSON compatible with new fields)
+      tradeHistory = upgradeTradesArray(tradeHistory);
+      (tradeHistory || []).forEach(t => {
+        if (!t || typeof t !== "object") return;
+
+        // Default pnlSource for older trades: assume manual if a PnL exists.
+        if (t.pnlSource === undefined || t.pnlSource === null || t.pnlSource === "") {
+          if (t.pnl !== null && t.pnl !== undefined && t.pnl !== "") t.pnlSource = "manual";
+        }
+
+        // Fill commission from instrument settings if missing (does NOT change PnL).
+        if ((t.commission === undefined || t.commission === null || t.commission === "") &&
+            t.instrumentId && t.commissionSource !== "import") {
+          const qty = t.contracts || 1;
+          const c = computeDefaultCommission(t.instrumentId, qty);
+          if (isFinite(c)) {
+            t.commission = c;
+            t.commissionSource = "instrument";
+          }
+        }
+      });
+
       } catch (e) {}
     }
 
@@ -1149,7 +1241,30 @@ async function cloudPutJson(url, payload) {
           setCloudDirty("settings", false);
           cloudState.lastSync = new Date().toISOString();
           setCloudStatus("ok", "Up to date");
-        } catch (e) {
+  
+      // Post-load migrations (keeps older JSON compatible with new fields)
+      tradeHistory = upgradeTradesArray(tradeHistory);
+      (tradeHistory || []).forEach(t => {
+        if (!t || typeof t !== "object") return;
+
+        // Default pnlSource for older trades: assume manual if a PnL exists.
+        if (t.pnlSource === undefined || t.pnlSource === null || t.pnlSource === "") {
+          if (t.pnl !== null && t.pnl !== undefined && t.pnl !== "") t.pnlSource = "manual";
+        }
+
+        // Fill commission from instrument settings if missing (does NOT change PnL).
+        if ((t.commission === undefined || t.commission === null || t.commission === "") &&
+            t.instrumentId && t.commissionSource !== "import") {
+          const qty = t.contracts || 1;
+          const c = computeDefaultCommission(t.instrumentId, qty);
+          if (isFinite(c)) {
+            t.commission = c;
+            t.commissionSource = "instrument";
+          }
+        }
+      });
+
+      } catch (e) {
           setCloudDirty("settings", true);
           setCloudStatus("error", "Sync error", e);
         }
@@ -1167,7 +1282,30 @@ async function cloudPutJson(url, payload) {
           setCloudDirty("trades", false);
           cloudState.lastSync = new Date().toISOString();
           setCloudStatus("ok", "Up to date");
-        } catch (e) {
+  
+      // Post-load migrations (keeps older JSON compatible with new fields)
+      tradeHistory = upgradeTradesArray(tradeHistory);
+      (tradeHistory || []).forEach(t => {
+        if (!t || typeof t !== "object") return;
+
+        // Default pnlSource for older trades: assume manual if a PnL exists.
+        if (t.pnlSource === undefined || t.pnlSource === null || t.pnlSource === "") {
+          if (t.pnl !== null && t.pnl !== undefined && t.pnl !== "") t.pnlSource = "manual";
+        }
+
+        // Fill commission from instrument settings if missing (does NOT change PnL).
+        if ((t.commission === undefined || t.commission === null || t.commission === "") &&
+            t.instrumentId && t.commissionSource !== "import") {
+          const qty = t.contracts || 1;
+          const c = computeDefaultCommission(t.instrumentId, qty);
+          if (isFinite(c)) {
+            t.commission = c;
+            t.commissionSource = "instrument";
+          }
+        }
+      });
+
+      } catch (e) {
           setCloudDirty("trades", true);
           setCloudStatus("error", "Sync error", e);
         }
@@ -1229,6 +1367,29 @@ async function cloudPutJson(url, payload) {
 
         cloudState.lastSync = new Date().toISOString();
         setCloudStatus("ok", "Up to date");
+
+      // Post-load migrations (keeps older JSON compatible with new fields)
+      tradeHistory = upgradeTradesArray(tradeHistory);
+      (tradeHistory || []).forEach(t => {
+        if (!t || typeof t !== "object") return;
+
+        // Default pnlSource for older trades: assume manual if a PnL exists.
+        if (t.pnlSource === undefined || t.pnlSource === null || t.pnlSource === "") {
+          if (t.pnl !== null && t.pnl !== undefined && t.pnl !== "") t.pnlSource = "manual";
+        }
+
+        // Fill commission from instrument settings if missing (does NOT change PnL).
+        if ((t.commission === undefined || t.commission === null || t.commission === "") &&
+            t.instrumentId && t.commissionSource !== "import") {
+          const qty = t.contracts || 1;
+          const c = computeDefaultCommission(t.instrumentId, qty);
+          if (isFinite(c)) {
+            t.commission = c;
+            t.commissionSource = "instrument";
+          }
+        }
+      });
+
       } catch (e) {
         // If we already merged locally but failed to push, mark as dirty so the next sync will retry.
         if (mergedApplied) {
@@ -1260,11 +1421,19 @@ async function cloudPutJson(url, payload) {
     function ensureDefaultInstruments() {
       if (!Array.isArray(settings.instruments) || !settings.instruments.length) {
         settings.instruments = [
-          { id: "MES", label: "MES (Micro ES)", tickSize: 0.25, tickValue: 1.25 },
-          { id: "MNQ", label: "MNQ (Micro NQ)", tickSize: 0.25, tickValue: 0.50 },
-          { id: "MGC", label: "MGC (Micro Gold)", tickSize: 0.1,  tickValue: 1.00 }
+          { id: "MES", label: "MES (Micro ES)", tickSize: 0.25, tickValue: 1.25, commissionPerContract: 2.00 },
+          { id: "MNQ", label: "MNQ (Micro NQ)", tickSize: 0.25, tickValue: 0.50, commissionPerContract: 0 },
+          { id: "MGC", label: "MGC (Micro Gold)", tickSize: 0.1,  tickValue: 1.00, commissionPerContract: 0 }
         ];
       }
+
+      // Migration: older settings may not have commissionPerContract
+      (settings.instruments || []).forEach(inst => {
+        if (!inst || typeof inst !== "object") return;
+        if (inst.commissionPerContract === undefined || inst.commissionPerContract === null || inst.commissionPerContract === "") {
+          inst.commissionPerContract = 0;
+        }
+      });
     }
 
 
@@ -1410,6 +1579,29 @@ function normalizeChecklists() {
             settings = Object.assign(settings, parsed);
           }
         }
+
+      // Post-load migrations (keeps older JSON compatible with new fields)
+      tradeHistory = upgradeTradesArray(tradeHistory);
+      (tradeHistory || []).forEach(t => {
+        if (!t || typeof t !== "object") return;
+
+        // Default pnlSource for older trades: assume manual if a PnL exists.
+        if (t.pnlSource === undefined || t.pnlSource === null || t.pnlSource === "") {
+          if (t.pnl !== null && t.pnl !== undefined && t.pnl !== "") t.pnlSource = "manual";
+        }
+
+        // Fill commission from instrument settings if missing (does NOT change PnL).
+        if ((t.commission === undefined || t.commission === null || t.commission === "") &&
+            t.instrumentId && t.commissionSource !== "import") {
+          const qty = t.contracts || 1;
+          const c = computeDefaultCommission(t.instrumentId, qty);
+          if (isFinite(c)) {
+            t.commission = c;
+            t.commissionSource = "instrument";
+          }
+        }
+      });
+
       } catch (e) {
         console.warn("Could not load settings", e);
       }
@@ -1428,6 +1620,29 @@ function normalizeChecklists() {
       }
       try {
         localStorage.setItem("orb_midpoint_settings_v1", JSON.stringify(settings));
+
+      // Post-load migrations (keeps older JSON compatible with new fields)
+      tradeHistory = upgradeTradesArray(tradeHistory);
+      (tradeHistory || []).forEach(t => {
+        if (!t || typeof t !== "object") return;
+
+        // Default pnlSource for older trades: assume manual if a PnL exists.
+        if (t.pnlSource === undefined || t.pnlSource === null || t.pnlSource === "") {
+          if (t.pnl !== null && t.pnl !== undefined && t.pnl !== "") t.pnlSource = "manual";
+        }
+
+        // Fill commission from instrument settings if missing (does NOT change PnL).
+        if ((t.commission === undefined || t.commission === null || t.commission === "") &&
+            t.instrumentId && t.commissionSource !== "import") {
+          const qty = t.contracts || 1;
+          const c = computeDefaultCommission(t.instrumentId, qty);
+          if (isFinite(c)) {
+            t.commission = c;
+            t.commissionSource = "instrument";
+          }
+        }
+      });
+
       } catch (e) {
         console.warn("Could not save settings", e);
       }
@@ -1442,6 +1657,29 @@ function normalizeChecklists() {
         if (raw === "all" || raw === "today") {
           statsScope = raw;
         }
+
+      // Post-load migrations (keeps older JSON compatible with new fields)
+      tradeHistory = upgradeTradesArray(tradeHistory);
+      (tradeHistory || []).forEach(t => {
+        if (!t || typeof t !== "object") return;
+
+        // Default pnlSource for older trades: assume manual if a PnL exists.
+        if (t.pnlSource === undefined || t.pnlSource === null || t.pnlSource === "") {
+          if (t.pnl !== null && t.pnl !== undefined && t.pnl !== "") t.pnlSource = "manual";
+        }
+
+        // Fill commission from instrument settings if missing (does NOT change PnL).
+        if ((t.commission === undefined || t.commission === null || t.commission === "") &&
+            t.instrumentId && t.commissionSource !== "import") {
+          const qty = t.contracts || 1;
+          const c = computeDefaultCommission(t.instrumentId, qty);
+          if (isFinite(c)) {
+            t.commission = c;
+            t.commissionSource = "instrument";
+          }
+        }
+      });
+
       } catch (e) {
         console.warn("Could not load stats scope", e);
       }
@@ -1450,6 +1688,29 @@ function normalizeChecklists() {
     function saveStatsScope() {
       try {
         localStorage.setItem("orb_midpoint_stats_scope_v1", statsScope);
+
+      // Post-load migrations (keeps older JSON compatible with new fields)
+      tradeHistory = upgradeTradesArray(tradeHistory);
+      (tradeHistory || []).forEach(t => {
+        if (!t || typeof t !== "object") return;
+
+        // Default pnlSource for older trades: assume manual if a PnL exists.
+        if (t.pnlSource === undefined || t.pnlSource === null || t.pnlSource === "") {
+          if (t.pnl !== null && t.pnl !== undefined && t.pnl !== "") t.pnlSource = "manual";
+        }
+
+        // Fill commission from instrument settings if missing (does NOT change PnL).
+        if ((t.commission === undefined || t.commission === null || t.commission === "") &&
+            t.instrumentId && t.commissionSource !== "import") {
+          const qty = t.contracts || 1;
+          const c = computeDefaultCommission(t.instrumentId, qty);
+          if (isFinite(c)) {
+            t.commission = c;
+            t.commissionSource = "instrument";
+          }
+        }
+      });
+
       } catch (e) {
         console.warn("Could not save stats scope", e);
       }
@@ -1487,9 +1748,32 @@ function normalizeChecklists() {
         if (raw) {
           const parsed = JSON.parse(raw);
           if (Array.isArray(parsed)) {
-            tradeHistory = parsed;
+            tradeHistory = upgradeTradesArray(parsed);
           }
         }
+
+      // Post-load migrations (keeps older JSON compatible with new fields)
+      tradeHistory = upgradeTradesArray(tradeHistory);
+      (tradeHistory || []).forEach(t => {
+        if (!t || typeof t !== "object") return;
+
+        // Default pnlSource for older trades: assume manual if a PnL exists.
+        if (t.pnlSource === undefined || t.pnlSource === null || t.pnlSource === "") {
+          if (t.pnl !== null && t.pnl !== undefined && t.pnl !== "") t.pnlSource = "manual";
+        }
+
+        // Fill commission from instrument settings if missing (does NOT change PnL).
+        if ((t.commission === undefined || t.commission === null || t.commission === "") &&
+            t.instrumentId && t.commissionSource !== "import") {
+          const qty = t.contracts || 1;
+          const c = computeDefaultCommission(t.instrumentId, qty);
+          if (isFinite(c)) {
+            t.commission = c;
+            t.commissionSource = "instrument";
+          }
+        }
+      });
+
       } catch (e) {
         console.warn("Could not load trade history", e);
         tradeHistory = [];
@@ -1499,6 +1783,29 @@ function normalizeChecklists() {
     function saveTradeHistory(skipCloud) {
       try {
         localStorage.setItem("orb_midpoint_trades_v1", JSON.stringify(tradeHistory));
+
+      // Post-load migrations (keeps older JSON compatible with new fields)
+      tradeHistory = upgradeTradesArray(tradeHistory);
+      (tradeHistory || []).forEach(t => {
+        if (!t || typeof t !== "object") return;
+
+        // Default pnlSource for older trades: assume manual if a PnL exists.
+        if (t.pnlSource === undefined || t.pnlSource === null || t.pnlSource === "") {
+          if (t.pnl !== null && t.pnl !== undefined && t.pnl !== "") t.pnlSource = "manual";
+        }
+
+        // Fill commission from instrument settings if missing (does NOT change PnL).
+        if ((t.commission === undefined || t.commission === null || t.commission === "") &&
+            t.instrumentId && t.commissionSource !== "import") {
+          const qty = t.contracts || 1;
+          const c = computeDefaultCommission(t.instrumentId, qty);
+          if (isFinite(c)) {
+            t.commission = c;
+            t.commissionSource = "instrument";
+          }
+        }
+      });
+
       } catch (e) {
         console.warn("Could not save trade history", e);
       }
@@ -1964,7 +2271,9 @@ function csvEscape(value) {
               result,
               rMultiple: null,
               pnl,
+              pnlSource: (pnl != null ? "import" : null),
               commission,
+              commissionSource: (commission != null ? "import" : null),
               notes: metaNote,
               tags: ["TV Import"],
               checklistPassed: null,
@@ -2278,6 +2587,10 @@ function renderInstrumentSettings() {
               <label>Tick Value ($)</label>
               <input type="number" step="0.01" class="inst-tickvalue" value="${inst.tickValue != null ? inst.tickValue : ""}" />
             </div>
+            <div>
+              <label>Commission ($/contract RT)</label>
+              <input type="number" step="0.01" class="inst-commission" value="${inst.commissionPerContract != null ? inst.commissionPerContract : ""}" />
+            </div>
           </div>
         `;
       });
@@ -2292,7 +2605,7 @@ function renderInstrumentSettings() {
         </div>
         <div style="font-size:0.75rem;color:#9ca3af;margin-bottom:0.5rem;">
           Configure the futures you trade. Symbol ID is used internally (e.g. MES, MNQ).
-          Tick size is the minimum price increment; tick value is dollar value per tick per contract.
+          Tick size is the minimum price increment; tick value is dollar value per tick per contract. Commission is optional and is treated as a per-contract round-trip cost for auto PnL.
         </div>
         <div id="instrumentRows">
           ${rowsHtml || "<div class='tip' style='font-size:0.75rem;'>No instruments yet. Click Add to create one.</div>"}
@@ -2303,7 +2616,7 @@ function renderInstrumentSettings() {
       const saveBtn = document.getElementById("saveInstrumentBtn");
       if (addBtn) addBtn.addEventListener("click", () => {
         const instruments = settings.instruments || [];
-        instruments.push({ id: "", label: "", tickSize: "", tickValue: "" });
+        instruments.push({ id: "", label: "", tickSize: "", tickValue: "", commissionPerContract: 0 });
         settings.instruments = instruments;
         renderInstrumentSettings();
       });
@@ -2347,6 +2660,29 @@ function renderInstrumentSettings() {
       settingsPanelOpen = false;
       try {
         document.removeEventListener("mousedown", handleSettingsOutsideClick, true);
+
+      // Post-load migrations (keeps older JSON compatible with new fields)
+      tradeHistory = upgradeTradesArray(tradeHistory);
+      (tradeHistory || []).forEach(t => {
+        if (!t || typeof t !== "object") return;
+
+        // Default pnlSource for older trades: assume manual if a PnL exists.
+        if (t.pnlSource === undefined || t.pnlSource === null || t.pnlSource === "") {
+          if (t.pnl !== null && t.pnl !== undefined && t.pnl !== "") t.pnlSource = "manual";
+        }
+
+        // Fill commission from instrument settings if missing (does NOT change PnL).
+        if ((t.commission === undefined || t.commission === null || t.commission === "") &&
+            t.instrumentId && t.commissionSource !== "import") {
+          const qty = t.contracts || 1;
+          const c = computeDefaultCommission(t.instrumentId, qty);
+          if (isFinite(c)) {
+            t.commission = c;
+            t.commissionSource = "instrument";
+          }
+        }
+      });
+
       } catch (e) {}
     }
 
@@ -2360,16 +2696,19 @@ function saveInstrumentsFromDOM() {
         const labelInput = grid.querySelector(".inst-label");
         const sizeInput = grid.querySelector(".inst-ticksize");
         const valueInput = grid.querySelector(".inst-tickvalue");
+        const commInput = grid.querySelector(".inst-commission");
         const id = idInput && idInput.value ? idInput.value.trim() : "";
         const label = labelInput && labelInput.value ? labelInput.value.trim() : "";
         const tickSizeVal = sizeInput && sizeInput.value !== "" ? parseFloat(sizeInput.value) : null;
         const tickValueVal = valueInput && valueInput.value !== "" ? parseFloat(valueInput.value) : null;
+        const commVal = commInput && commInput.value !== "" ? parseFloat(commInput.value) : null;
         if (!id) return;
         newInstruments.push({
           id,
           label: label || id,
           tickSize: tickSizeVal,
-          tickValue: tickValueVal
+          tickValue: tickValueVal,
+          commissionPerContract: (commVal != null && isFinite(commVal) ? commVal : 0)
         });
       });
       settings.instruments = newInstruments;
@@ -2387,7 +2726,17 @@ function saveInstrumentsFromDOM() {
       document.removeEventListener("mousedown", handleSettingsOutsideClick, true);
     }
 
-    function computeAutoPnL(params) {
+    function computeDefaultCommission(instrumentId, contracts) {
+      const instruments = settings.instruments || [];
+      const inst = instruments.find(i => i.id === instrumentId);
+      if (!inst) return 0;
+      const commPer = parseFloat(inst.commissionPerContract);
+      const qty = parseFloat(contracts || 1) || 1;
+      if (!isFinite(commPer) || commPer <= 0 || !isFinite(qty) || qty <= 0) return 0;
+      return commPer * qty;
+    }
+
+    function computeAutoPnLDetail(params) {
       const { instrumentId, direction, entry, sl, tp1, result, contracts } = params;
       const instruments = settings.instruments || [];
       const inst = instruments.find(i => i.id === instrumentId);
@@ -2403,6 +2752,13 @@ function saveInstrumentsFromDOM() {
       const qty = parseFloat(contracts || 1) || 1;
       if (!isFinite(e) || !isFinite(s) || !isFinite(t1) || !isFinite(qty) || qty <= 0) return null;
 
+      const commission = computeDefaultCommission(instrumentId, qty);
+
+      if (result === "Breakeven") {
+        // Treat breakeven as flat on price, but still pay commission if configured.
+        return { pnl: -commission, commission };
+      }
+
       let priceDiff;
       if (result === "Win") {
         if (direction === "Long") priceDiff = t1 - e;
@@ -2412,17 +2768,22 @@ function saveInstrumentsFromDOM() {
         if (direction === "Long") priceDiff = s - e;
         else if (direction === "Short") priceDiff = e - s;
         else return null;
-      } else if (result === "Breakeven") {
-        return 0;
       } else {
         return null;
       }
 
       const ticks = priceDiff / tickSize;
       const pnlPerContract = ticks * tickValue;
-      const totalPnl = pnlPerContract * qty;
-      if (!isFinite(totalPnl)) return null;
-      return totalPnl;
+      const totalGross = pnlPerContract * qty;
+      if (!isFinite(totalGross)) return null;
+
+      const net = totalGross - commission;
+      return { pnl: net, commission };
+    }
+
+    function computeAutoPnL(params) {
+      const detail = computeAutoPnLDetail(params);
+      return detail ? detail.pnl : null;
     }
 
     function computeChecklistScore(questionsArr, answersArr) {
@@ -2713,9 +3074,9 @@ function saveInstrumentsFromDOM() {
       const result = trade.result || (trade.checklistPassed === false ? "Blocked" : "Pending");
 
       // Auto PnL (only when Win/Loss/Breakeven and we have the needed fields)
-      let autoPnl = null;
+      let autoDetail = null;
       if (trade.instrumentId && (result === "Win" || result === "Loss" || result === "Breakeven")) {
-        autoPnl = computeAutoPnL({
+        autoDetail = computeAutoPnLDetail({
           instrumentId: trade.instrumentId,
           direction: direction,
           entry: entry,
@@ -2795,9 +3156,9 @@ function saveInstrumentsFromDOM() {
 
         <div style="margin-top:0.75rem;">
           <div style="display:flex;justify-content:space-between;gap:0.75rem;align-items:center;">
-            <div style="font-size:0.85rem;color:#9ca3af;">Auto PnL (from Entry/SL/TP1 + Result)</div>
+            <div style="font-size:0.85rem;color:#9ca3af;">Auto PnL (net from Entry/SL/TP1 + Result${(autoDetail && isFinite(autoDetail.commission) && autoDetail.commission > 0) ? (' · Comm: $' + autoDetail.commission.toFixed(2)) : ''})</div>
             <div style="font-weight:600;">
-              ${autoPnl == null ? "-" : formatMoney(autoPnl)}
+              ${autoDetail == null ? "-" : formatMoney(autoDetail.pnl)}
             </div>
           </div>
         </div>
@@ -2910,6 +3271,10 @@ function startEditTrade(id) {
         <div>
           <label for="editPnL">Realized PnL ($, optional)</label>
           <input id="editPnL" type="number" step="0.01" />
+          <div style="display:flex;gap:0.5rem;align-items:center;margin-top:0.35rem;">
+            <div id="editAutoPnlPreview" class="tip" style="flex:1;margin:0;font-size:0.75rem;">Auto PnL (net, incl. comm): —</div>
+            <button type="button" class="secondary small" id="editUseAutoBtn">Use Auto</button>
+          </div>
         </div>
         <div>
           <label for="editTags">Tags (comma-separated)</label>
@@ -2946,6 +3311,89 @@ function startEditTrade(id) {
       setVal("editTags", tagsStr);
       setVal("editPnL", trade.pnl);
       setVal("editNotes", trade.notes);
+
+      attachEditAutoPnlHandlers(trade);
+    }
+
+
+    function attachEditAutoPnlHandlers(trade) {
+      const pnlEl = document.getElementById("editPnL");
+      const previewEl = document.getElementById("editAutoPnlPreview");
+      const useBtn = document.getElementById("editUseAutoBtn");
+
+      if (!pnlEl || !previewEl) return;
+
+      // Decide if this trade should be treated as auto or manual by default.
+      // - Newer trades will have trade.pnlSource ("auto" or "manual")
+      // - Older trades: if pnl exists, assume manual (don't overwrite unless user clears / clicks Use Auto)
+      const initialSource = (trade && trade.pnlSource === "auto") ? "auto"
+        : (!pnlEl.value ? "auto" : "manual");
+      pnlEl.dataset.source = initialSource;
+
+      const getVals = () => {
+        const instrumentId = (document.getElementById("editInstrument") || {}).value || "";
+        const direction = (document.getElementById("editDirection") || {}).value || "";
+        const entry = (document.getElementById("editEntry") || {}).value || "";
+        const sl = (document.getElementById("editSL") || {}).value || "";
+        const tp1 = (document.getElementById("editTP1") || {}).value || "";
+        const result = (document.getElementById("editResult") || {}).value || "";
+        const contractsRaw = (document.getElementById("editContracts") || {}).value || "1";
+        const contractsNum = parseFloat(contractsRaw);
+        const contracts = isFinite(contractsNum) && contractsNum > 0 ? contractsNum : 1;
+        return { instrumentId, direction, entry, sl, tp1, result, contracts };
+      };
+
+      const render = (detail) => {
+        if (!detail) {
+          previewEl.textContent = "Auto PnL (net, incl. comm): — (needs instrument + entry/SL/TP1 + result)";
+          return;
+        }
+        const comm = (detail.commission && isFinite(detail.commission) && detail.commission > 0)
+          ? ` (comm $${detail.commission.toFixed(2)})`
+          : "";
+        previewEl.textContent = `Auto PnL (net, incl. comm): ${formatMoney(detail.pnl)}${comm}`;
+      };
+
+      const recompute = (forceApply) => {
+        const v = getVals();
+        const okResult = (v.result === "Win" || v.result === "Loss" || v.result === "Breakeven");
+        let detail = null;
+        if (v.instrumentId && okResult && v.entry && v.sl && v.tp1 && v.direction) {
+          detail = computeAutoPnLDetail(v);
+        }
+        render(detail);
+
+        const allowAutoApply =
+          forceApply ||
+          pnlEl.dataset.source === "auto" ||
+          pnlEl.value === "";
+
+        if (detail && allowAutoApply) {
+          pnlEl.value = isFinite(detail.pnl) ? detail.pnl.toFixed(2) : "";
+          pnlEl.dataset.source = "auto";
+        }
+      };
+
+      // If user types into PnL, treat it as manual. Clearing it re-enables auto.
+      pnlEl.addEventListener("input", () => {
+        pnlEl.dataset.source = (pnlEl.value === "") ? "auto" : "manual";
+        recompute(false);
+      });
+
+      ["editInstrument","editDirection","editEntry","editSL","editTP1","editResult","editContracts"].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const evt = (el.tagName === "SELECT") ? "change" : "input";
+        el.addEventListener(evt, () => recompute(false));
+        if (el.tagName === "SELECT") el.addEventListener("input", () => recompute(false));
+      });
+
+      if (useBtn) {
+        useBtn.addEventListener("click", () => recompute(true));
+      }
+
+      // Initial paint
+      recompute(false);
     }
 
     function saveEditedTrade() {
@@ -2992,27 +3440,86 @@ function startEditTrade(id) {
       }
 
       let pnl = null;
-      if (pnlStr !== "") {
-        const p = parseFloat(pnlStr);
-        if (isFinite(p)) pnl = p;
-      }
-      if (pnl === null && instrumentId && entry && sl && tp1 && (trade.result === "Win" || trade.result === "Loss" || trade.result === "Breakeven")) {
-        const auto = computeAutoPnL({
-          instrumentId,
-          direction: trade.direction,
-          entry,
-          sl,
-          tp1,
-          result: trade.result,
-          contracts: trade.contracts || 1
-        });
-        if (auto !== null) {
-          pnl = auto;
+      let pnlSource = null;
+
+      // Commission: keep imported commission if present, otherwise use instrument default.
+      let commission = (trade.commissionSource === "import" && isFinite(parseFloat(trade.commission))) ? parseFloat(trade.commission) : null;
+      let commissionSource = (trade.commissionSource === "import" && commission !== null) ? "import" : null;
+
+      if (commission === null && trade.instrumentId) {
+        const c = computeDefaultCommission(trade.instrumentId, trade.contracts || 1);
+        if (isFinite(c)) {
+          commission = c;
+          commissionSource = "instrument";
         }
       }
+
+      const pnlEl = document.getElementById("editPnL");
+      const pnlMode = pnlEl ? pnlEl.dataset.source : null;
+
+      const tryAuto = () => {
+        if (
+          trade.instrumentId &&
+          trade.entry &&
+          trade.sl &&
+          trade.tp1 &&
+          (trade.result === "Win" || trade.result === "Loss" || trade.result === "Breakeven")
+        ) {
+          return computeAutoPnLDetail({
+            instrumentId: trade.instrumentId,
+            direction: trade.direction,
+            entry: trade.entry,
+            sl: trade.sl,
+            tp1: trade.tp1,
+            result: trade.result,
+            contracts: trade.contracts || 1
+          });
+        }
+        return null;
+      };
+
+      if (pnlMode === "auto") {
+        const detail = tryAuto();
+        if (detail !== null) {
+          pnl = detail.pnl;
+          pnlSource = "auto";
+          commission = detail.commission;
+          commissionSource = "instrument";
+        } else if (pnlStr !== "") {
+          const p = parseFloat(pnlStr);
+          if (isFinite(p)) {
+            pnl = p;
+            pnlSource = "manual";
+          }
+        }
+      } else {
+        // Manual mode: honor user value if present, otherwise auto-calc when possible.
+        if (pnlStr !== "") {
+          const p = parseFloat(pnlStr);
+          if (isFinite(p)) {
+            pnl = p;
+            pnlSource = "manual";
+          }
+        } else {
+          const detail = tryAuto();
+          if (detail !== null) {
+            pnl = detail.pnl;
+            pnlSource = "auto";
+            commission = detail.commission;
+            commissionSource = "instrument";
+          }
+        }
+      }
+
       trade.pnl = pnl;
+      trade.pnlSource = pnlSource;
+      trade.commission = commission;
+      trade.commissionSource = commissionSource;
+
 
       trade.notes = notes;
+
+      touchTrade(trade);
 
       saveTradeHistory();
       renderTradeHistory();
@@ -3954,6 +4461,10 @@ function attachJournalInputListeners() {
       const rewardPerContract = ticksReward * tickValue;
       const totalReward = rewardPerContract * contracts;
 
+      const commission = computeDefaultCommission(instId, contracts);
+      const netRisk = totalRisk + (commission || 0);
+      const netReward = totalReward - (commission || 0);
+
       let rrText = "";
       if (riskPerContract > 0) {
         const rMultiple = rewardPerContract / riskPerContract;
@@ -3963,7 +4474,10 @@ function attachJournalInputListeners() {
       const signReward = totalReward >= 0 ? "+" : "";
       out.textContent =
         `Risk per contract: ${ticksRisk.toFixed(1)} ticks ($${riskPerContract.toFixed(2)}), position: $${totalRisk.toFixed(2)}. ` +
-        `Reward to TP1: ${ticksReward.toFixed(1)} ticks (${signReward}$${totalReward.toFixed(2)})${rrText}.`;
+        `Reward to TP1: ${ticksReward.toFixed(1)} ticks (${signReward}$${totalReward.toFixed(2)})${rrText}.` +
+        ((commission && commission > 0)
+          ? ` Est comm: $${commission.toFixed(2)} · Net risk: $${netRisk.toFixed(2)} · Net reward: ${(netReward >= 0 ? "+" : "")}$${netReward.toFixed(2)}.`
+          : ``);
     }
 
     function saveJournal(fromChecklist) {
@@ -3998,9 +4512,25 @@ function attachJournalInputListeners() {
       const contracts = isFinite(contractsNum) && contractsNum > 0 ? contractsNum : 1;
 
       let pnl = null;
+      let pnlSource = null;
+      let commission = null;
+      let commissionSource = null;
+
       if (pnlStr !== "") {
         const p = parseFloat(pnlStr);
-        if (isFinite(p)) pnl = p;
+        if (isFinite(p)) {
+          pnl = p;
+          pnlSource = "manual";
+        }
+      }
+
+      // Default commission from instrument settings (optional)
+      if (instrumentId) {
+        const c = computeDefaultCommission(instrumentId, contracts);
+        if (isFinite(c)) {
+          commission = c;
+          commissionSource = "instrument";
+        }
       }
 
       if (
@@ -4011,7 +4541,7 @@ function attachJournalInputListeners() {
         tp1 &&
         (result === "Win" || result === "Loss" || result === "Breakeven")
       ) {
-        const auto = computeAutoPnL({
+        const detail = computeAutoPnLDetail({
           instrumentId,
           direction,
           entry,
@@ -4020,8 +4550,11 @@ function attachJournalInputListeners() {
           result,
           contracts
         });
-        if (auto !== null) {
-          pnl = auto;
+        if (detail !== null) {
+          pnl = detail.pnl;
+          pnlSource = "auto";
+          commission = detail.commission;
+          commissionSource = "instrument";
         }
       }
 
@@ -4047,6 +4580,9 @@ const trade = {
         result: result || "Pending",
         rMultiple: rMultiple || null,
         pnl,
+        pnlSource,
+        commission,
+        commissionSource,
         notes,
         tags,
         checklistKey,
