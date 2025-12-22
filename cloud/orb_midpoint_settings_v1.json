@@ -6,19 +6,22 @@
       "id": "MES",
       "label": "MES (Micro ES)",
       "tickSize": 0.25,
-      "tickValue": 1.25
+      "tickValue": 1.25,
+      "commissionPerContract": 0
     },
     {
       "id": "MNQ",
       "label": "MNQ (Micro NQ)",
       "tickSize": 0.25,
-      "tickValue": 0.5
+      "tickValue": 0.5,
+      "commissionPerContract": 0
     },
     {
       "id": "MGC",
       "label": "MGC (Micro Gold)",
       "tickSize": 0.1,
-      "tickValue": 1
+      "tickValue": 1,
+      "commissionPerContract": 0
     }
   ],
   "lastInstrumentId": "MES",
@@ -124,5 +127,5 @@
     }
   ],
   "lastChecklistKey": "orb",
-  "updatedAt": "2025-12-22T21:13:15.588Z"
+  "updatedAt": "2025-12-22T21:53:56.623Z"
 }
