@@ -390,8 +390,16 @@
     .tags-line {
       margin-top: 0.25rem;
       display: flex;
+      align-items: flex-start;
+      gap: 0.25rem;
+    }
+
+    .tags-wrap {
+      display: flex;
       flex-wrap: wrap;
       gap: 0.25rem;
+      flex: 1 1 auto;
+      min-width: 0;
     }
     .tag-pill {
       font-size: 0.65rem;
@@ -416,7 +424,10 @@
       border: 1px solid #334155;
       background: rgba(15, 23, 42, 0.55);
       color: #e5e7eb;
-      margin-right: 0.1rem;
+      margin-left: 0.35rem;
+      margin-right: 0;
+    
+      white-space: nowrap;
     }
 
     .stats-body {
@@ -2548,7 +2559,7 @@ function saveInstrumentsFromDOM() {
         const tagsPills = (Array.isArray(trade.tags) && trade.tags.length)
           ? trade.tags.map(t => `<span class="tag-pill">${escapeHtml(t)}</span>`).join("")
           : "";
-        const tagsHtml = `<div class="tags-line"><span class="trade-num">Trade ${tradeNum}</span>${tagsPills}</div>`;
+        const tagsHtml = `<div class="tags-line"><div class="tags-wrap">${tagsPills}</div><span class="trade-num">Trade ${tradeNum}</span></div>`;
 
         let pnlHtml = "";
         if (trade.pnl !== null && trade.pnl !== undefined && trade.pnl !== "") {
