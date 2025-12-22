@@ -185,7 +185,7 @@
     "tp2": null,
     "result": "Win",
     "rMultiple": null,
-    "pnl": 191,
+    "pnl": 187,
     "notes": "A+ Setup on Midpoint ORB, Targeting London and Asia Session lows for a 1/4 RR,I did Fomo into another Contract right before my Limit order at the mid point was hit, Probably should have waited for the Limit order. Ended up trailing my stop down and got filled for basically a 1/2 RR before price shot right back up past my initial SL",
     "tags": [
       "ORB",
@@ -254,9 +254,9 @@
     ],
     "checklistPassed": true,
     "failReason": null,
-    "updatedAt": "2025-12-22T21:55:42.357Z",
+    "updatedAt": "2025-12-22T21:58:59.789Z",
     "pnlSource": "auto",
-    "commission": 4,
+    "commission": 8,
     "commissionSource": "instrument"
   }
 ]
