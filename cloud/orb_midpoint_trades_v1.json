@@ -1,5 +1,88 @@
 [
   {
+    "id": 1766437934757,
+    "timestamp": "2025-12-22T14:03:00.000Z",
+    "symbol": "MES",
+    "direction": "Long",
+    "instrumentId": "MES",
+    "contracts": 1,
+    "entry": "6915",
+    "sl": "6903",
+    "tp1": "6927",
+    "tp2": null,
+    "result": "Pending",
+    "rMultiple": null,
+    "pnl": null,
+    "notes": "Setup seemed okay, We had a big push to upside at 8:55, I set my limit order for the midpoint, Got tagged in at 9:39. Rode it down close to stop loss. Price reversed and stalled out about 12 points above the midpoint. Trailed my stop and got filled. Price did not go higher the rest of the day.",
+    "tags": [
+      "ORB",
+      "B- Setup",
+      "Trailing Stop"
+    ],
+    "checklistKey": "orb",
+    "checklistName": "ORB Midpoint Checklist",
+    "checklistScore": 83,
+    "checklistSnapshot": [
+      {
+        "idx": 1,
+        "id": 1,
+        "section": "Fundamental Analysis",
+        "text": "Is there any News today that could effect the Market or Trade?",
+        "hardStop": false,
+        "failOn": "yes",
+        "answer": "no"
+      },
+      {
+        "idx": 2,
+        "id": 2,
+        "section": "Psychology",
+        "text": "Are you prepared to risk 1-2% and withen the weekly 3% drawdown?",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 3,
+        "id": 3,
+        "section": "Bias & Confluence",
+        "text": "Do you have at least one Confluence to work with?",
+        "hardStop": false,
+        "failOn": "no",
+        "answer": "no"
+      },
+      {
+        "idx": 4,
+        "id": 4,
+        "section": "Timing & Entry",
+        "text": "Are we withen the preperation window 8:00 - 9:30EST?",
+        "hardStop": false,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 5,
+        "id": 5,
+        "section": "Execution Prep",
+        "text": "Are your stop-loss and take-profit orders prepared? (1/4 RR, At minimum 1/2 RR)",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 6,
+        "id": 6,
+        "section": "Entry Trigger",
+        "text": "At or near the midpoint, Do you see a valid Re-Test Confirmation forming?",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      }
+    ],
+    "checklistPassed": true,
+    "failReason": null,
+    "updatedAt": "2025-12-22T21:12:14.757Z"
+  },
+  {
     "id": 1765931712433,
     "timestamp": "2025-12-16T14:50:00.000Z",
     "symbol": "MES",
