@@ -12,7 +12,7 @@
     "tp2": null,
     "result": "Win",
     "rMultiple": null,
-    "pnl": 58,
+    "pnl": 56,
     "notes": "Setup seemed okay, We had a big push to upside at 8:55, I set my limit order for the midpoint, Got tagged in at 9:39. Rode it down close to stop loss. Price reversed and stalled out about 12 points above the midpoint. Trailed my stop and got filled. Price did not go higher the rest of the day.",
     "tags": [
       "ORB",
@@ -80,9 +80,9 @@
     ],
     "checklistPassed": true,
     "failReason": null,
-    "updatedAt": "2025-12-22T21:57:45.146Z",
+    "updatedAt": "2025-12-22T21:58:37.571Z",
     "pnlSource": "auto",
-    "commission": 2,
+    "commission": 4,
     "commissionSource": "instrument"
   },
   {
