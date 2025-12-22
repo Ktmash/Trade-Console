@@ -409,6 +409,16 @@
       border-color: #38bdf8;
     }
 
+    .trade-num {
+      font-size: 0.65rem;
+      padding: 0.1rem 0.45rem;
+      border-radius: 999px;
+      border: 1px solid #334155;
+      background: rgba(15, 23, 42, 0.55);
+      color: #e5e7eb;
+      margin-right: 0.1rem;
+    }
+
     .stats-body {
       transition: filter 0.15s ease;
     }
@@ -654,6 +664,24 @@
       settings: "/api/cloud/settings",
       trades: "/api/cloud/trades"
     };
+    const CLOUD_DIRTY_SETTINGS_KEY = "orb_midpoint_cloud_dirty_settings_v1";
+    const CLOUD_DIRTY_TRADES_KEY = "orb_midpoint_cloud_dirty_trades_v1";
+
+    function setCloudDirty(kind, dirty) {
+      try {
+        const k = (kind === "settings") ? CLOUD_DIRTY_SETTINGS_KEY : CLOUD_DIRTY_TRADES_KEY;
+        localStorage.setItem(k, dirty ? "1" : "0");
+      } catch (e) {}
+    }
+
+    function getCloudDirty(kind) {
+      try {
+        const k = (kind === "settings") ? CLOUD_DIRTY_SETTINGS_KEY : CLOUD_DIRTY_TRADES_KEY;
+        return localStorage.getItem(k) === "1";
+      } catch (e) { return false; }
+    }
+
+
 
     let cloudEnabled = true;
     let cloudKey = "";
@@ -806,16 +834,227 @@
       return { cloudSettings, cloudTrades };
     }
 
+    // -----------------------------
+    // Cloud merge helpers (prevents "pull overwrote my newest trade")
+    // -----------------------------
+    function safeParseTime(val) {
+      if (!val) return 0;
+      const t = Date.parse(val);
+      return isFinite(t) ? t : 0;
+    }
+
+    function tradeTimeValueGlobal(t) {
+      if (!t) return 0;
+      const ts = t.timestamp ? Date.parse(t.timestamp) : NaN;
+      if (isFinite(ts)) return ts;
+      const alt = t.time || t.date || t.datetime || t.dateTime;
+      const ts2 = alt ? Date.parse(alt) : NaN;
+      return isFinite(ts2) ? ts2 : 0;
+    }
+
+    function hashString(str) {
+      // FNV-1a-ish
+      let h = 2166136261;
+      const s = String(str || "");
+      for (let i = 0; i < s.length; i++) {
+        h ^= s.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+      }
+      return (h >>> 0).toString(16);
+    }
+
+    function deterministicTradeId(trade) {
+      const ts = trade && trade.timestamp ? trade.timestamp : "";
+      const parts = [
+        ts,
+        trade && (trade.symbol || trade.instrumentId) || "",
+        trade && trade.direction || "",
+        trade && trade.entry || "",
+        trade && trade.sl || "",
+        trade && trade.tp1 || "",
+        trade && trade.tp2 || "",
+        trade && trade.contracts || "",
+        trade && trade.pnl !== null && trade.pnl !== undefined ? trade.pnl : "",
+        trade && trade.notes || ""
+      ].join("|");
+      return "t_" + hashString(parts);
+    }
+
+    function ensureTradeMeta(trade) {
+      if (!trade || typeof trade !== "object") return trade;
+
+      // Normalize timestamp if older shapes exist
+      if (!trade.timestamp) {
+        const alt = trade.time || trade.date || trade.datetime || trade.dateTime;
+        if (alt) {
+          const d = new Date(alt);
+          if (!isNaN(d.getTime())) trade.timestamp = d.toISOString();
+        }
+      }
+      if (!trade.timestamp) trade.timestamp = new Date().toISOString();
+
+      // Stable id: keep existing, otherwise generate deterministically so local+cloud can dedupe.
+      if (!trade.id) trade.id = deterministicTradeId(trade);
+
+      // updatedAt helps resolve conflicts during merge
+      if (!trade.updatedAt) trade.updatedAt = trade.timestamp;
+
+      return trade;
+    }
+
+    function touchTrade(trade) {
+      if (!trade || typeof trade !== "object") return;
+      const now = new Date().toISOString();
+      trade.updatedAt = now;
+      if (!trade.timestamp) trade.timestamp = now;
+      if (!trade.id) trade.id = deterministicTradeId(trade);
+    }
+
+    function upgradeTradesArray(arr) {
+      if (!Array.isArray(arr)) return [];
+      return arr.map(t => ensureTradeMeta(Object.assign({}, t)));
+    }
+
+    function mergeTradesArrays(localArr, remoteArr) {
+      const map = new Map();
+
+      const put = (trade, preferLocalOnTie) => {
+        if (!trade || typeof trade !== "object") return;
+        ensureTradeMeta(trade);
+        const key = String(trade.id);
+        const existing = map.get(key);
+        if (!existing) {
+          map.set(key, trade);
+          return;
+        }
+        const a = safeParseTime(existing.updatedAt || existing.timestamp);
+        const b = safeParseTime(trade.updatedAt || trade.timestamp);
+        if (b > a) map.set(key, trade);
+        else if (b === a && preferLocalOnTie) map.set(key, trade);
+      };
+
+      // Remote first, then local (local wins exact ties)
+      (remoteArr || []).forEach(t => put(ensureTradeMeta(Object.assign({}, t)), false));
+      (localArr || []).forEach(t => put(ensureTradeMeta(Object.assign({}, t)), true));
+
+      return Array.from(map.values());
+    }
+
+    function mergeStringArray(primary, secondary) {
+      const out = [];
+      const seen = new Set();
+      const add = (v) => {
+        const s = String(v || "").trim();
+        if (!s) return;
+        const k = s.toLowerCase();
+        if (seen.has(k)) return;
+        seen.add(k);
+        out.push(s);
+      };
+      (primary || []).forEach(add);
+      (secondary || []).forEach(add);
+      return out;
+    }
+
+    function mergeById(primary, secondary) {
+      const map = new Map();
+      (secondary || []).forEach(o => { if (o && o.id) map.set(String(o.id), o); });
+      (primary || []).forEach(o => { if (o && o.id) map.set(String(o.id), o); });
+      return Array.from(map.values());
+    }
+
+    function mergeByKey(primary, secondary) {
+      const map = new Map();
+      (secondary || []).forEach(o => { if (o && o.key) map.set(String(o.key), o); });
+      (primary || []).forEach(o => { if (o && o.key) map.set(String(o.key), o); });
+      return Array.from(map.values());
+    }
+
+    function mergeSettingsObjects(localS, remoteS) {
+      const local = (localS && typeof localS === "object") ? localS : {};
+      const remote = (remoteS && typeof remoteS === "object") ? remoteS : {};
+      const localTs = safeParseTime(local.updatedAt);
+      const remoteTs = safeParseTime(remote.updatedAt);
+
+      // Prefer whichever was updated more recently (fallback: if we know local is dirty, prefer local)
+      const preferLocal = getCloudDirty("settings") || (localTs > remoteTs);
+
+      const primary = preferLocal ? local : remote;
+      const secondary = preferLocal ? remote : local;
+
+      const merged = Object.assign({}, secondary, primary);
+
+      merged.tagSuggestions = mergeStringArray(
+        Array.isArray(primary.tagSuggestions) ? primary.tagSuggestions : [],
+        Array.isArray(secondary.tagSuggestions) ? secondary.tagSuggestions : []
+      );
+
+      merged.instruments = mergeById(
+        Array.isArray(primary.instruments) ? primary.instruments : [],
+        Array.isArray(secondary.instruments) ? secondary.instruments : []
+      );
+
+      merged.checklists = mergeByKey(
+        Array.isArray(primary.checklists) ? primary.checklists : [],
+        Array.isArray(secondary.checklists) ? secondary.checklists : []
+      );
+
+      merged.updatedAt = preferLocal ? (local.updatedAt || new Date().toISOString()) : (remote.updatedAt || new Date().toISOString());
+      return merged;
+    }
+
+    function computeTradeNumberMap(trades) {
+      const arr = Array.isArray(trades) ? trades.map(t => ensureTradeMeta(Object.assign({}, t))) : [];
+      arr.sort((a, b) => {
+        const dt = tradeTimeValueGlobal(a) - tradeTimeValueGlobal(b);
+        if (dt !== 0) return dt;
+        return String(a.id).localeCompare(String(b.id));
+      });
+      const map = new Map();
+      arr.forEach((t, idx) => map.set(String(t.id), idx + 1)); // oldest = 1
+      return map;
+    }
+
+
+    
     async function cloudSaveSettingsNow() {
       if (!cloudEnabled || cloudMuteSaves) return;
+
+      // Merge before pushing (prevents "last writer wins" wiping another device).
+      let remote = null;
+      try { remote = await cloudGetJson(CLOUD_ENDPOINTS.settings); } catch (e) { remote = null; }
+
+      const merged = mergeSettingsObjects(settings, (remote && typeof remote === "object") ? remote : {});
+      settings = Object.assign(settings, merged);
+      if (!Array.isArray(settings.instruments)) settings.instruments = [];
+      ensureDefaultInstruments();
+      ensureDefaultChecklists();
+      normalizeChecklists();
+      saveSettings(true);
+
       await cloudPutJson(CLOUD_ENDPOINTS.settings, settings);
     }
 
+    
     async function cloudSaveTradesNow() {
       if (!cloudEnabled || cloudMuteSaves) return;
+
+      // Merge before pushing (prevents overwriting trades created on another device).
+      let remote = null;
+      try { remote = await cloudGetJson(CLOUD_ENDPOINTS.trades); } catch (e) { remote = null; }
+
+      const merged = mergeTradesArrays(
+        upgradeTradesArray(tradeHistory),
+        upgradeTradesArray(Array.isArray(remote) ? remote : [])
+      );
+
+      tradeHistory = merged;
+      saveTradeHistory(true);
+
       await cloudPutJson(CLOUD_ENDPOINTS.trades, tradeHistory);
     }
 
+    
     function scheduleCloudSaveSettings() {
       if (!cloudEnabled || cloudMuteSaves) return;
       if (cloudSaveSettingsTimer) clearTimeout(cloudSaveSettingsTimer);
@@ -823,9 +1062,11 @@
         try {
           setCloudStatus("syncing", "Syncing…");
           await cloudSaveSettingsNow();
+          setCloudDirty("settings", false);
           cloudState.lastSync = new Date().toISOString();
           setCloudStatus("ok", "Up to date");
         } catch (e) {
+          setCloudDirty("settings", true);
           setCloudStatus("error", "Sync error", e);
         }
       }, 1200);
@@ -838,36 +1079,61 @@
         try {
           setCloudStatus("syncing", "Syncing…");
           await cloudSaveTradesNow();
+          setCloudDirty("trades", false);
           cloudState.lastSync = new Date().toISOString();
           setCloudStatus("ok", "Up to date");
         } catch (e) {
+          setCloudDirty("trades", true);
           setCloudStatus("error", "Sync error", e);
         }
       }, 1200);
     }
 
+    
     async function cloudSyncNow() {
       if (!cloudEnabled) return;
+      let mergedApplied = false;
       try {
         setCloudStatus("syncing", "Syncing…");
         await cloudPing();
         const { cloudSettings, cloudTrades } = await cloudLoadAll();
 
-        // Apply cloud → local (source of truth)
+        const localSettings = Object.assign({}, settings);
+        const localTrades = Array.isArray(tradeHistory) ? tradeHistory.slice() : [];
+
+        const remoteSettings = (cloudSettings && typeof cloudSettings === "object") ? cloudSettings : {};
+        const remoteTrades = Array.isArray(cloudTrades) ? cloudTrades : [];
+
+        const mergedSettings = mergeSettingsObjects(localSettings, remoteSettings);
+        const mergedTrades = mergeTradesArrays(
+          upgradeTradesArray(localTrades),
+          upgradeTradesArray(remoteTrades)
+        );
+
+        // Apply merged → local
         cloudMuteSaves = true;
-        if (cloudSettings && typeof cloudSettings === "object") {
-          settings = Object.assign(settings, cloudSettings);
-          if (!Array.isArray(settings.instruments)) settings.instruments = [];
-          ensureDefaultInstruments();
-          ensureDefaultChecklists();
-          normalizeChecklists();
-          saveSettings(true);
-        }
-        if (Array.isArray(cloudTrades)) {
-          tradeHistory = cloudTrades;
-          saveTradeHistory(true);
-        }
+
+        settings = Object.assign(settings, mergedSettings);
+        if (!Array.isArray(settings.instruments)) settings.instruments = [];
+        ensureDefaultInstruments();
+        ensureDefaultChecklists();
+        normalizeChecklists();
+        saveSettings(true);
+
+        tradeHistory = mergedTrades;
+        saveTradeHistory(true);
+
         cloudMuteSaves = false;
+        mergedApplied = true;
+
+        // Push merged → cloud (so we never lose local-only trades/settings)
+        await Promise.all([
+          cloudPutJson(CLOUD_ENDPOINTS.settings, settings),
+          cloudPutJson(CLOUD_ENDPOINTS.trades, tradeHistory)
+        ]);
+
+        setCloudDirty("settings", false);
+        setCloudDirty("trades", false);
 
         renderTradeHistory();
         renderInstrumentSettings();
@@ -876,9 +1142,17 @@
         cloudState.lastSync = new Date().toISOString();
         setCloudStatus("ok", "Up to date");
       } catch (e) {
+        // If we already merged locally but failed to push, mark as dirty so the next sync will retry.
+        if (mergedApplied) {
+          setCloudDirty("settings", true);
+          setCloudDirty("trades", true);
+        }
         setCloudStatus("error", "Sync error", e);
+      } finally {
+        cloudMuteSaves = false;
       }
     }
+
 
     async function bootstrapCloudSync() {
       loadCloudPrefs();
@@ -1060,6 +1334,10 @@ function normalizeChecklists() {
     }
 
     function saveSettings(skipCloud) {
+      if (!skipCloud) {
+        // Mark settings as recently updated so cloud merge can resolve conflicts.
+        settings.updatedAt = new Date().toISOString();
+      }
       try {
         localStorage.setItem("orb_midpoint_settings_v1", JSON.stringify(settings));
       } catch (e) {
@@ -1142,6 +1420,8 @@ function normalizeChecklists() {
     }
 
     function addTrade(trade) {
+      ensureTradeMeta(trade);
+      touchTrade(trade);
       tradeHistory.unshift(trade);
       if (tradeHistory.length > 500) {
         tradeHistory = tradeHistory.slice(0, 500);
@@ -2186,6 +2466,20 @@ function saveInstrumentsFromDOM() {
         return;
       }
 
+
+      // Make sure every trade has a stable id / timestamp / updatedAt (migration).
+      let mutated = false;
+      tradeHistory.forEach(t => {
+        const hadId = !!(t && t.id);
+        const hadTs = !!(t && t.timestamp);
+        const hadUp = !!(t && t.updatedAt);
+        ensureTradeMeta(t);
+        if (!hadId || !hadTs || !hadUp) mutated = true;
+      });
+
+      // Display-only numbering (deterministic): oldest trade = Trade 1.
+      const tradeNumberMap = computeTradeNumberMap(tradeHistory);
+
       let inner = `
         <div class="history-header">
           <span>Trade History (local)</span>
@@ -2203,15 +2497,7 @@ function saveInstrumentsFromDOM() {
 
       // Display newest trade first based on the trade timestamp (the date/time you input),
       // not the time you clicked "Save".
-      const tradeTimeValue = (t) => {
-        if (!t) return 0;
-        const ts = t.timestamp ? Date.parse(t.timestamp) : NaN;
-        if (isFinite(ts)) return ts;
-        // Fallbacks for older/migrated shapes
-        const alt = t.time || t.date || t.datetime || t.dateTime;
-        const ts2 = alt ? Date.parse(alt) : NaN;
-        return isFinite(ts2) ? ts2 : 0;
-      };
+      const tradeTimeValue = tradeTimeValueGlobal;
 
       const tradesSorted = [...tradeHistory].sort((a, b) => tradeTimeValue(b) - tradeTimeValue(a));
 
@@ -2255,11 +2541,14 @@ function saveInstrumentsFromDOM() {
           if (isFinite(g)) gradeHtml = `<span class="badge badge-grade">${Math.round(g)}%</span>`;
         }
 
-        const id = trade.id || trade.timestamp || Math.random().toString(36).slice(2);
+        ensureTradeMeta(trade);
+        const id = String(trade.id);
+        const tradeNum = tradeNumberMap.get(id) || "";
 
-        const tagsHtml = Array.isArray(trade.tags) && trade.tags.length
-          ? `<div class="tags-line">${trade.tags.map(t => `<span class="tag-pill">${t}</span>`).join("")}</div>`
+        const tagsPills = (Array.isArray(trade.tags) && trade.tags.length)
+          ? trade.tags.map(t => `<span class="tag-pill">${escapeHtml(t)}</span>`).join("")
           : "";
+        const tagsHtml = `<div class="tags-line"><span class="trade-num">Trade ${tradeNum}</span>${tagsPills}</div>`;
 
         let pnlHtml = "";
         if (trade.pnl !== null && trade.pnl !== undefined && trade.pnl !== "") {
@@ -2294,14 +2583,10 @@ function saveInstrumentsFromDOM() {
             ${status === false && trade.failReason ? `<div style="margin-top:0.25rem;color:#f97316;font-size:0.75rem;">Blocked on: ${trade.failReason}</div>` : ""}
           </div>
         `;
-
-        if (!trade.id) {
-          trade.id = id;
-        }
       });
 
       container.innerHTML = inner;
-      saveTradeHistory();
+      if (mutated) saveTradeHistory();
       renderStats();
     }
 
