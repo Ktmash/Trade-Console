@@ -5,9 +5,7 @@ const SETTINGS_PATH = "cloud/orb_midpoint_settings_v1.json";
 export async function onRequest(context) {
   const { request, env } = context;
 
-  if (request.method === "OPTIONS") {
-    return textResponse("ok");
-  }
+  if (request.method === "OPTIONS") return textResponse("ok");
 
   const auth = requireKeyIfConfigured(request, env);
   if (!auth.ok) return auth.response;
@@ -15,27 +13,32 @@ export async function onRequest(context) {
   try {
     if (request.method === "GET") {
       const file = await ghReadJson(env, SETTINGS_PATH);
-      // Return just the settings object (not wrapped)
-      if (!file.exists || file.data == null) {
-        return jsonResponse({});
-      }
-      return jsonResponse(file.data);
+      if (!file.exists || file.data == null) return jsonResponse({});
+      return jsonResponse((file.data && typeof file.data === "object" && !Array.isArray(file.data)) ? file.data : {});
     }
 
     if (request.method === "PUT") {
       const body = await request.json();
-      const data = body && body.data && typeof body.data === "object" ? body.data : null;
-      if (!data) {
+      const incoming = body && body.data;
+
+      if (!incoming || typeof incoming !== "object" || Array.isArray(incoming)) {
         return jsonResponse({ error: "Bad Request: expected { data: <object> }" }, { status: 400 });
       }
 
+      const remoteFile = await ghReadJson(env, SETTINGS_PATH);
+      const remote = (remoteFile.data && typeof remoteFile.data === "object" && !Array.isArray(remoteFile.data)) ? remoteFile.data : {};
+      const merged = { ...remote, ...incoming, updatedAt: new Date().toISOString() };
+
       const msg = `Update settings (${new Date().toISOString()})`;
-      const result = await ghWriteJson(env, SETTINGS_PATH, data, msg);
-      return jsonResponse({ ok: true, commit: result.commit?.sha || null });
+      const result = await ghWriteJson(env, SETTINGS_PATH, merged, msg);
+
+      return jsonResponse({ ok: true, requiresKey: auth.requiresKey, commit: result.commit?.sha || null, skipped: !!result.skipped });
     }
 
     return jsonResponse({ error: "Method Not Allowed" }, { status: 405 });
   } catch (e) {
-    return jsonResponse({ error: String(e && e.message ? e.message : e) }, { status: 500 });
+    const msg = String(e && e.message ? e.message : e);
+    const status = msg.includes("GitHub PUT failed (409)") ? 409 : 500;
+    return jsonResponse({ error: msg }, { status });
   }
 }

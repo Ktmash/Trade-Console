@@ -828,14 +828,86 @@
       return res.json();
     }
 
-    async function cloudPutJson(url, payload) {
-      const res = await fetch(url, { method: "PUT", headers: cloudHeaders(), body: JSON.stringify({ data: payload }) });
-      if (!res.ok) {
+    // -----------------------------
+// Cloud write lock + write serialization (prevents GitHub SHA conflicts from overlapping syncs)
+// -----------------------------
+const CLOUD_WRITE_LOCK_KEY = "orb_midpoint_cloud_write_lock_v1";
+const cloudClientId = (typeof crypto !== "undefined" && crypto.randomUUID) ? crypto.randomUUID() : ("tab_" + Math.random().toString(16).slice(2));
+
+function cloudNowMs() { return Date.now(); }
+
+async function cloudSleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function tryAcquireCloudWriteLock(ttlMs = 15000) {
+  try {
+    const raw = localStorage.getItem(CLOUD_WRITE_LOCK_KEY);
+    const now = cloudNowMs();
+    if (raw) {
+      const cur = JSON.parse(raw);
+      if (cur && cur.owner && cur.until && cur.until > now && cur.owner !== cloudClientId) {
+        return false;
+      }
+    }
+    const next = { owner: cloudClientId, until: now + ttlMs };
+    localStorage.setItem(CLOUD_WRITE_LOCK_KEY, JSON.stringify(next));
+    // Re-check we actually hold it (best-effort; localStorage isn't truly atomic across tabs)
+    const verify = JSON.parse(localStorage.getItem(CLOUD_WRITE_LOCK_KEY) || "{}");
+    return verify.owner === cloudClientId;
+  } catch (e) {
+    // If localStorage is unavailable, just proceed without cross-tab locking.
+    return true;
+  }
+}
+
+function releaseCloudWriteLock() {
+  try {
+    const raw = localStorage.getItem(CLOUD_WRITE_LOCK_KEY);
+    if (!raw) return;
+    const cur = JSON.parse(raw);
+    if (cur && cur.owner === cloudClientId) localStorage.removeItem(CLOUD_WRITE_LOCK_KEY);
+  } catch (e) {}
+}
+
+async function acquireCloudWriteLockWait(maxWaitMs = 6000) {
+  const start = cloudNowMs();
+  while (cloudNowMs() - start < maxWaitMs) {
+    if (tryAcquireCloudWriteLock()) return true;
+    await cloudSleep(120);
+  }
+  throw new Error("Cloud sync busy in another tab — close extra Trade Console tabs and try again.");
+}
+
+async function cloudPutJson(url, payload) {
+  // Serialize PUTs within this tab to avoid overlapping saves racing each other.
+  if (!cloudPutJson._queue) cloudPutJson._queue = Promise.resolve();
+
+  const run = async () => {
+    await acquireCloudWriteLockWait();
+    try {
+      for (let attempt = 0; attempt < 3; attempt++) {
+        const res = await fetch(url, { method: "PUT", headers: cloudHeaders(), body: JSON.stringify({ data: payload }) });
+        if (res.ok) return res.json();
+
         const t = await res.text().catch(() => "");
+        // If backend returns 409, it means conflict storm; brief backoff then retry.
+        if (res.status === 409) {
+          await cloudSleep(180 * (attempt + 1));
+          continue;
+        }
         throw new Error(`Cloud PUT failed (${res.status}): ${t}`);
       }
-      return res.json();
+      throw new Error("Cloud PUT failed (409): conflict retry limit reached");
+    } finally {
+      releaseCloudWriteLock();
     }
+  };
+
+  const p = cloudPutJson._queue.then(run, run);
+  // Keep the queue alive even if a PUT fails.
+  cloudPutJson._queue = p.catch(() => {});
+  return p;
+}
+
 
     async function cloudLoadAll() {
       const [cloudSettings, cloudTrades] = await Promise.all([
@@ -1070,6 +1142,7 @@
       if (!cloudEnabled || cloudMuteSaves) return;
       if (cloudSaveSettingsTimer) clearTimeout(cloudSaveSettingsTimer);
       cloudSaveSettingsTimer = setTimeout(async () => {
+        if (!cloudEnabled || cloudMuteSaves) return;
         try {
           setCloudStatus("syncing", "Syncing…");
           await cloudSaveSettingsNow();
@@ -1087,6 +1160,7 @@
       if (!cloudEnabled || cloudMuteSaves) return;
       if (cloudSaveTradesTimer) clearTimeout(cloudSaveTradesTimer);
       cloudSaveTradesTimer = setTimeout(async () => {
+        if (!cloudEnabled || cloudMuteSaves) return;
         try {
           setCloudStatus("syncing", "Syncing…");
           await cloudSaveTradesNow();
@@ -1103,6 +1177,9 @@
     
     async function cloudSyncNow() {
       if (!cloudEnabled) return;
+      // Cancel any pending debounced saves so they don't race this sync.
+      if (cloudSaveSettingsTimer) { clearTimeout(cloudSaveSettingsTimer); cloudSaveSettingsTimer = null; }
+      if (cloudSaveTradesTimer) { clearTimeout(cloudSaveTradesTimer); cloudSaveTradesTimer = null; }
       let mergedApplied = false;
       try {
         setCloudStatus("syncing", "Syncing…");
