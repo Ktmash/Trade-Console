@@ -94,11 +94,11 @@
     "contracts": 1,
     "entry": "6872",
     "sl": "6882",
-    "tp1": "6862",
+    "tp1": "6862.75",
     "tp2": null,
     "result": "Win",
     "rMultiple": null,
-    "pnl": 50,
+    "pnl": 44.25,
     "notes": "Setup seemed good, We had two bounces off the mid point after NY open, Got in ran down very close to take profit but reversed. Luckily i trailed my stop loss after a 1/1 RR May need to look at some SL discipline. I think the PMI news caused the reversal. EOD UPDATE: Should have trusted the process, My targets ended up getting hit but OG stop loss was safe",
     "tags": [
       "ORB",
@@ -167,9 +167,9 @@
     ],
     "checklistPassed": true,
     "failReason": null,
-    "updatedAt": "2025-12-16T14:50:00.000Z",
-    "pnlSource": "manual",
-    "commission": 0,
+    "updatedAt": "2025-12-22T21:57:19.173Z",
+    "pnlSource": "auto",
+    "commission": 2,
     "commissionSource": "instrument"
   },
   {
