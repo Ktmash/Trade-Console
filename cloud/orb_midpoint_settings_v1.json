@@ -14,14 +14,14 @@
       "label": "MNQ (Micro NQ)",
       "tickSize": 0.25,
       "tickValue": 0.5,
-      "commissionPerContract": 0
+      "commissionPerContract": 4
     },
     {
       "id": "MGC",
       "label": "MGC (Micro Gold)",
       "tickSize": 0.1,
       "tickValue": 1,
-      "commissionPerContract": 0
+      "commissionPerContract": 4
     }
   ],
   "lastInstrumentId": "MES",
@@ -127,5 +127,5 @@
     }
   ],
   "lastChecklistKey": "orb",
-  "updatedAt": "2025-12-23T16:50:05.432Z"
+  "updatedAt": "2025-12-23T16:50:18.827Z"
 }
