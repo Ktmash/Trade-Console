@@ -1,13 +1,13 @@
 {
   "dollarsPerR": 50,
-  "pnlBlurred": false,
+  "pnlBlurred": true,
   "instruments": [
     {
       "id": "MES",
       "label": "MES (Micro ES)",
       "tickSize": 0.25,
       "tickValue": 1.25,
-      "commissionPerContract": 4
+      "commissionPerContract": 0
     },
     {
       "id": "MNQ",
@@ -127,5 +127,5 @@
     }
   ],
   "lastChecklistKey": "orb",
-  "updatedAt": "2025-12-23T14:35:16.259Z"
+  "updatedAt": "2025-12-23T14:46:22.760Z"
 }
