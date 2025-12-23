@@ -10,13 +10,13 @@
     "sl": "6939",
     "tp1": "6887",
     "tp2": null,
-    "result": "Pending",
+    "result": "Loss",
     "rMultiple": null,
-    "pnl": null,
-    "pnlSource": null,
-    "commission": 4,
+    "pnl": -60,
+    "pnlSource": "auto",
+    "commission": 0,
     "commissionSource": "instrument",
-    "notes": "Extremely odd price action here, We had a stron gpush to the down side at 8:35 EST. I set my limit order and a god candle filled the order and went all the way to previous session highs. we are now consolidating.",
+    "notes": "Extremely odd price action here, We had a stron gpush to the down side at 8:35 EST. I set my limit order and a god candle filled the order and went all the way to previous session highs. we are now consolidating. Blew past previous session highs and hit SL. Really don't know what caused this price action. I felt pretty confident.",
     "tags": [
       "ORB",
       "C- Setup",
@@ -84,7 +84,7 @@
     ],
     "checklistPassed": true,
     "failReason": null,
-    "updatedAt": "2025-12-23T14:38:12.540Z"
+    "updatedAt": "2025-12-23T14:47:08.559Z"
   },
   {
     "id": 1766437934757,
