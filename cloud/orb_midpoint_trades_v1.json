@@ -16,12 +16,13 @@
     "pnlSource": "auto",
     "commission": 4,
     "commissionSource": "instrument",
-    "notes": "Extremely odd price action here, We had a strong push to the down side at 8:35 EST. I set my limit order and a god candle filled the order and went all the way to previous session highs. we are now consolidating. Blew past previous session highs and hit SL. Really don't know what caused this price action. I felt pretty confident.",
+    "notes": "Extremely odd price action here, We had a strong push to the down side at 8:35 EST. I set my limit order and a god candle filled the order and went all the way to previous session highs. we are now consolidating. Blew past previous session highs and hit SL. Really don't know what caused this price action. I felt pretty confident. EOD UPDATE: It was totally the news, That should have been predictable",
     "tags": [
       "ORB",
       "C- Setup",
       "News Day",
-      "Prelim GDP"
+      "Prelim GDP",
+      "My fault"
     ],
     "checklistKey": "orb",
     "checklistName": "ORB Midpoint Checklist",
@@ -84,7 +85,7 @@
     ],
     "checklistPassed": true,
     "failReason": null,
-    "updatedAt": "2025-12-23T15:37:11.793Z"
+    "updatedAt": "2025-12-23T21:51:14.294Z"
   },
   {
     "id": 1766437934757,
