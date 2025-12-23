@@ -16,8 +16,13 @@
     "pnlSource": null,
     "commission": 4,
     "commissionSource": "instrument",
-    "notes": "",
-    "tags": [],
+    "notes": "Extremely odd price action here, We had a stron gpush to the down side at 8:35 EST. I set my limit order and a god candle filled the order and went all the way to previous session highs. we are now consolidating.",
+    "tags": [
+      "ORB",
+      "C- Setup",
+      "News Day",
+      "Prelim GDP"
+    ],
     "checklistKey": "orb",
     "checklistName": "ORB Midpoint Checklist",
     "checklistScore": 83,
@@ -79,7 +84,7 @@
     ],
     "checklistPassed": true,
     "failReason": null,
-    "updatedAt": "2025-12-23T14:35:14.277Z"
+    "updatedAt": "2025-12-23T14:38:12.540Z"
   },
   {
     "id": 1766437934757,
