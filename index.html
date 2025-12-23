@@ -1421,9 +1421,9 @@ async function cloudPutJson(url, payload) {
     function ensureDefaultInstruments() {
       if (!Array.isArray(settings.instruments) || !settings.instruments.length) {
         settings.instruments = [
-          { id: "MES", label: "MES (Micro ES)", tickSize: 0.25, tickValue: 1.25, commissionPerContract: 2.00 },
-          { id: "MNQ", label: "MNQ (Micro NQ)", tickSize: 0.25, tickValue: 0.50, commissionPerContract: 0 },
-          { id: "MGC", label: "MGC (Micro Gold)", tickSize: 0.1,  tickValue: 1.00, commissionPerContract: 0 }
+          { id: "MES", label: "MES (Micro ES)", tickSize: 0.25, tickValue: 1.25, commissionPerContract: 4.00 },
+          { id: "MNQ", label: "MNQ (Micro NQ)", tickSize: 0.25, tickValue: 0.50, commissionPerContract: 4.00 },
+          { id: "MGC", label: "MGC (Micro Gold)", tickSize: 0.1,  tickValue: 1.00, commissionPerContract: 4.00 }
         ];
       }
 
