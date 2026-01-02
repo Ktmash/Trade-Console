@@ -1001,6 +1001,36 @@ async function cloudPutJson(url, payload) {
 }
 
 
+async function cloudDeleteJson(url) {
+  // Serialize cloud mutations within this tab (shares the same queue as PUTs).
+  if (!cloudPutJson._queue) cloudPutJson._queue = Promise.resolve();
+
+  const run = async () => {
+    await acquireCloudWriteLockWait();
+    try {
+      for (let attempt = 0; attempt < 3; attempt++) {
+        const res = await fetch(url, { method: "DELETE", headers: cloudHeaders() });
+        if (res.ok) return res.json();
+
+        const t = await res.text().catch(() => "");
+        if (res.status === 409) {
+          await cloudSleep(180 * (attempt + 1));
+          continue;
+        }
+        throw new Error(`Cloud DELETE failed (${res.status}): ${t}`);
+      }
+      throw new Error("Cloud DELETE failed (409): conflict retry limit reached");
+    } finally {
+      releaseCloudWriteLock();
+    }
+  };
+
+  const p = cloudPutJson._queue.then(run, run);
+  cloudPutJson._queue = p.catch(() => {});
+  return p;
+}
+
+
     async function cloudLoadAll() {
       const [cloudSettings, cloudTrades] = await Promise.all([
         cloudGetJson(CLOUD_ENDPOINTS.settings),
@@ -1421,9 +1451,9 @@ async function cloudPutJson(url, payload) {
     function ensureDefaultInstruments() {
       if (!Array.isArray(settings.instruments) || !settings.instruments.length) {
         settings.instruments = [
-          { id: "MES", label: "MES (Micro ES)", tickSize: 0.25, tickValue: 1.25, commissionPerContract: 4.00 },
-          { id: "MNQ", label: "MNQ (Micro NQ)", tickSize: 0.25, tickValue: 0.50, commissionPerContract: 4.00 },
-          { id: "MGC", label: "MGC (Micro Gold)", tickSize: 0.1,  tickValue: 1.00, commissionPerContract: 4.00 }
+          { id: "MES", label: "MES (Micro ES)", tickSize: 0.25, tickValue: 1.25, commissionPerContract: 2.00 },
+          { id: "MNQ", label: "MNQ (Micro NQ)", tickSize: 0.25, tickValue: 0.50, commissionPerContract: 0 },
+          { id: "MGC", label: "MGC (Micro Gold)", tickSize: 0.1,  tickValue: 1.00, commissionPerContract: 0 }
         ];
       }
 
@@ -1825,11 +1855,52 @@ function normalizeChecklists() {
       renderTradeHistory();
     }
 
-    function clearTradeHistory() {
-      if (!confirm("Clear all stored trades from this browser? This cannot be undone.")) return;
-      tradeHistory = [];
-      saveTradeHistory();
-      renderTradeHistory();
+    async function clearTradeHistory() {
+      // Cloud clear (all devices). We clear the cloud FIRST (so a failure doesn't destroy your local copy).
+      const ok = confirm("Clear trade history from the CLOUD (all devices)? This cannot be undone.");
+      if (!ok) return;
+
+      const typed = prompt("Type CLEAR to permanently delete cloud trade history:", "");
+      if (typed === null) return;
+      if (String(typed).trim().toUpperCase() !== "CLEAR") {
+        alert("Canceled.");
+        return;
+      }
+
+      if (!cloudEnabled) {
+        alert("Cloud Sync is OFF. Turn it on (Home page → Cloud Sync → On), then try again.");
+        return;
+      }
+
+      // Backup local history (just in case).
+      try {
+        localStorage.setItem("orb_midpoint_trades_backup_" + new Date().toISOString(), JSON.stringify(tradeHistory || []));
+      } catch (e) {}
+
+      // Cancel any pending debounced cloud saves so they don't race the clear.
+      if (cloudSaveTradesTimer) { clearTimeout(cloudSaveTradesTimer); cloudSaveTradesTimer = null; }
+
+      cloudMuteSaves = true;
+      try {
+        setCloudStatus("syncing", "Clearing…");
+        await cloudDeleteJson(CLOUD_ENDPOINTS.trades);
+
+        tradeHistory = [];
+        saveTradeHistory(true);
+        renderTradeHistory();
+
+        setCloudDirty("trades", false);
+        cloudState.lastSync = new Date().toISOString();
+        setCloudStatus("ok", "Cloud cleared");
+
+        alert("Cloud trade history cleared. Open your other devices/tabs and press Sync once so they pull the empty history (otherwise an old tab can re-upload its local cache).");
+      } catch (e) {
+        setCloudDirty("trades", true);
+        setCloudStatus("error", "Clear failed", e);
+        alert("Cloud clear failed. Your local history was not changed (a backup snapshot was saved).");
+      } finally {
+        cloudMuteSaves = false;
+      }
     }
 
     
