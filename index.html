@@ -2817,25 +2817,29 @@ function saveInstrumentsFromDOM() {
       const tickValue = parseFloat(inst.tickValue);
       if (!isFinite(tickSize) || tickSize <= 0 || !isFinite(tickValue) || tickValue <= 0) return null;
 
-      const e = parseFloat(entry);
-      const s = parseFloat(sl);
-      const t1 = parseFloat(tp1);
       const qty = parseFloat(contracts || 1) || 1;
-      if (!isFinite(e) || !isFinite(s) || !isFinite(t1) || !isFinite(qty) || qty <= 0) return null;
+      if (!isFinite(qty) || qty <= 0) return null;
 
       const commission = computeDefaultCommission(instrumentId, qty);
 
       if (result === "Breakeven") {
-        // Treat breakeven as flat on price, but still pay commission if configured.
+        // Flat on price, still pay commission if configured.
         return { pnl: -commission, commission };
       }
 
+      const e = parseFloat(entry);
+      if (!isFinite(e)) return null;
+
       let priceDiff;
       if (result === "Win") {
+        const t1 = parseFloat(tp1);
+        if (!isFinite(t1)) return null;
         if (direction === "Long") priceDiff = t1 - e;
         else if (direction === "Short") priceDiff = e - t1;
         else return null;
       } else if (result === "Loss") {
+        const s = parseFloat(sl);
+        if (!isFinite(s)) return null;
         if (direction === "Long") priceDiff = s - e;
         else if (direction === "Short") priceDiff = e - s;
         else return null;
@@ -3416,7 +3420,7 @@ function startEditTrade(id) {
 
       const render = (detail) => {
         if (!detail) {
-          previewEl.textContent = "Auto PnL (net, incl. comm): — (needs instrument + entry/SL/TP1 + result)";
+          previewEl.textContent = "Auto PnL (net, incl. comm): — (Win needs Entry+TP1 · Loss needs Entry+SL · BE needs instrument)";
           return;
         }
         const comm = (detail.commission && isFinite(detail.commission) && detail.commission > 0)
@@ -3429,8 +3433,13 @@ function startEditTrade(id) {
         const v = getVals();
         const okResult = (v.result === "Win" || v.result === "Loss" || v.result === "Breakeven");
         let detail = null;
-        if (v.instrumentId && okResult && v.entry && v.sl && v.tp1 && v.direction) {
-          detail = computeAutoPnLDetail(v);
+        if (v.instrumentId && okResult) {
+          const hasWin = (v.result === "Win" && v.direction && v.entry && v.tp1);
+          const hasLoss = (v.result === "Loss" && v.direction && v.entry && v.sl);
+          const hasBE = (v.result === "Breakeven");
+          if (hasWin || hasLoss || hasBE) {
+            detail = computeAutoPnLDetail(v);
+          }
         }
         render(detail);
 
@@ -3531,10 +3540,12 @@ function startEditTrade(id) {
       const tryAuto = () => {
         if (
           trade.instrumentId &&
-          trade.entry &&
-          trade.sl &&
-          trade.tp1 &&
-          (trade.result === "Win" || trade.result === "Loss" || trade.result === "Breakeven")
+          (trade.result === "Win" || trade.result === "Loss" || trade.result === "Breakeven") &&
+          (
+            (trade.result === "Win" && trade.direction && trade.entry && trade.tp1) ||
+            (trade.result === "Loss" && trade.direction && trade.entry && trade.sl) ||
+            (trade.result === "Breakeven")
+          )
         ) {
           return computeAutoPnLDetail({
             instrumentId: trade.instrumentId,
@@ -4476,7 +4487,7 @@ function renderJournalScreen(fromChecklist) {
     }
 
 function attachJournalInputListeners() {
-      const ids = ["journalInstrument","journalDirection","journalEntry","journalSL","journalTP1","journalContracts"];
+      const ids = ["journalInstrument","journalDirection","journalEntry","journalSL","journalTP1","journalContracts","journalResult"];
       ids.forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
@@ -4493,6 +4504,7 @@ function attachJournalInputListeners() {
       const getEl = id => document.getElementById(id);
       const instId = getEl("journalInstrument") ? getEl("journalInstrument").value : "";
       const dir = getEl("journalDirection") ? getEl("journalDirection").value : "";
+      const result = getEl("journalResult") ? getEl("journalResult").value : "";
       const entry = getEl("journalEntry") ? parseFloat(getEl("journalEntry").value) : NaN;
       const sl = getEl("journalSL") ? parseFloat(getEl("journalSL").value) : NaN;
       const tp1 = getEl("journalTP1") ? parseFloat(getEl("journalTP1").value) : NaN;
@@ -4500,8 +4512,8 @@ function attachJournalInputListeners() {
       const out = getEl("riskPreview");
       if (!out) return;
 
-      if (!instId || !dir || !isFinite(entry) || !isFinite(sl) || !isFinite(tp1) || !isFinite(contracts) || contracts <= 0) {
-        out.textContent = "Fill instrument, direction, entry, SL, TP1, and contracts to see risk / reward.";
+      if (!instId || !dir || !isFinite(contracts) || contracts <= 0) {
+        out.textContent = "Fill instrument, direction, and contracts to see risk / reward.";
         return;
       }
 
@@ -4515,6 +4527,75 @@ function attachJournalInputListeners() {
       const tickValue = parseFloat(inst.tickValue);
       if (!isFinite(tickSize) || tickSize <= 0 || !isFinite(tickValue) || tickValue <= 0) {
         out.textContent = "Instrument tick settings are invalid.";
+        return;
+      }
+
+      const commission = computeDefaultCommission(instId, contracts);
+
+      // If the user has selected an outcome, show the distance based on that outcome:
+      // - Win  => Entry -> TP1
+      // - Loss => Entry -> SL
+      // - Breakeven => flat (still commission if configured)
+      if (result === "Win" || result === "Loss" || result === "Breakeven") {
+        if (result !== "Breakeven" && !isFinite(entry)) {
+          out.textContent = "Fill Entry to compute the selected outcome.";
+          return;
+        }
+
+        let priceDiff = 0;
+        let label = "";
+
+        if (result === "Win") {
+          if (!isFinite(tp1)) {
+            out.textContent = "Win selected: fill TP1 to compute outcome (Entry → TP1).";
+            return;
+          }
+          label = "Outcome (Win, Entry → TP1)";
+          priceDiff = (dir === "Long") ? (tp1 - entry) : (entry - tp1);
+        } else if (result === "Loss") {
+          if (!isFinite(sl)) {
+            out.textContent = "Loss selected: fill Stop Loss to compute outcome (Entry → SL).";
+            return;
+          }
+          label = "Outcome (Loss, Entry → SL)";
+          priceDiff = (dir === "Long") ? (sl - entry) : (entry - sl);
+        } else {
+          label = "Outcome (Breakeven)";
+          priceDiff = 0;
+        }
+
+        const ticks = priceDiff / tickSize;
+        const grossPerContract = ticks * tickValue;
+        const gross = grossPerContract * contracts;
+        const net = gross - (commission || 0);
+
+        const signGross = gross >= 0 ? "+" : "";
+        const signNet = net >= 0 ? "+" : "";
+
+        // Optional planning context if user also provided the opposite leg.
+        let extra = "";
+        if (isFinite(entry) && isFinite(sl) && isFinite(tp1)) {
+          const riskTicks = Math.abs(entry - sl) / tickSize;
+          const riskPer = riskTicks * tickValue;
+          const rewardTicks = (dir === "Long") ? (tp1 - entry) / tickSize : (entry - tp1) / tickSize;
+          const rewardPer = rewardTicks * tickValue;
+          if (riskPer > 0) {
+            const rMultiple = rewardPer / riskPer;
+            extra = ` · Plan R/R ~ ${rMultiple.toFixed(2)}R`;
+          }
+        }
+
+        out.textContent =
+          `${label}: ${ticks.toFixed(1)} ticks (${signGross}$${gross.toFixed(2)})` +
+          ((commission && commission > 0) ? ` · Comm est: $${commission.toFixed(2)} · Net: ${signNet}$${net.toFixed(2)}` : ``) +
+          extra +
+          ".";
+        return;
+      }
+
+      // Planning mode (no explicit result): show both risk and reward.
+      if (!isFinite(entry) || !isFinite(sl) || !isFinite(tp1)) {
+        out.textContent = "Fill entry, SL, and TP1 (or pick Win/Loss) to see risk / reward.";
         return;
       }
 
@@ -4532,7 +4613,6 @@ function attachJournalInputListeners() {
       const rewardPerContract = ticksReward * tickValue;
       const totalReward = rewardPerContract * contracts;
 
-      const commission = computeDefaultCommission(instId, contracts);
       const netRisk = totalRisk + (commission || 0);
       const netReward = totalReward - (commission || 0);
 
@@ -4607,10 +4687,12 @@ function attachJournalInputListeners() {
       if (
         pnl === null &&
         instrumentId &&
-        entry &&
-        sl &&
-        tp1 &&
-        (result === "Win" || result === "Loss" || result === "Breakeven")
+        (result === "Win" || result === "Loss" || result === "Breakeven") &&
+        (
+          (result === "Win" && direction && entry && tp1) ||
+          (result === "Loss" && direction && entry && sl) ||
+          (result === "Breakeven")
+        )
       ) {
         const detail = computeAutoPnLDetail({
           instrumentId,
