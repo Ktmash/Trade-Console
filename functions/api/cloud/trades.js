@@ -56,6 +56,19 @@ export async function onRequest(context) {
       return jsonResponse(Array.isArray(file.data) ? file.data : []);
     }
 
+
+    if (request.method === "DELETE") {
+      const msg = `Clear trades (${new Date().toISOString()})`;
+      const result = await ghWriteJson(env, TRADES_PATH, [], msg);
+      return jsonResponse({
+        ok: true,
+        requiresKey: auth.requiresKey,
+        cleared: true,
+        commit: result.commit?.sha || null,
+        skipped: !!result.skipped
+      });
+    }
+
     if (request.method === "PUT") {
       const body = await request.json();
       const incoming = body && body.data;
