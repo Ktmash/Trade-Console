@@ -7,7 +7,7 @@
       "label": "MES (Micro ES)",
       "tickSize": 0.25,
       "tickValue": 1.25,
-      "commissionPerContract": 4
+      "commissionPerContract": 2
     },
     {
       "id": "MNQ",
@@ -127,5 +127,5 @@
     }
   ],
   "lastChecklistKey": "orb",
-  "updatedAt": "2026-01-02T19:02:28.227Z"
+  "updatedAt": "2026-01-02T19:02:45.617Z"
 }
