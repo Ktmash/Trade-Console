@@ -16,7 +16,7 @@ function sleep(ms) {
 export function corsHeaders() {
   return {
     "access-control-allow-origin": "*",
-    "access-control-allow-methods": "GET, PUT, OPTIONS",
+    "access-control-allow-methods": "GET, PUT, DELETE, OPTIONS",
     "access-control-allow-headers": "Content-Type, X-Sync-Key",
     "access-control-max-age": "86400"
   };
