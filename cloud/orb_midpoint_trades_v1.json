@@ -1,1 +1,437 @@
-[]
+[
+  {
+    "id": 1767020223648,
+    "timestamp": "2025-12-29T14:15:00.000Z",
+    "symbol": "MES",
+    "direction": "Short",
+    "instrumentId": "MES",
+    "contracts": 1,
+    "entry": "6960",
+    "sl": "6972",
+    "tp1": "6946.25",
+    "tp2": null,
+    "result": "Win",
+    "rMultiple": null,
+    "pnl": 64.75,
+    "pnlSource": "auto",
+    "commission": 4,
+    "commissionSource": "instrument",
+    "notes": "Had some good volume before NY open indicating a short opportunity. We did wick up way past the mid point but did not hit my SL and the Candle closed below the midpoint so i entered. I trailed my stop down because i thought i saw some reversal signs but i should of probably been more disciplined and allowed for it to drop more. SL Trailed too soon, Get better SL Discipline! Trust the model.",
+    "tags": [
+      "ORB",
+      "B- Setup",
+      "Trailing Stop",
+      "My fault"
+    ],
+    "checklistKey": "orb",
+    "checklistName": "ORB Midpoint Checklist",
+    "checklistScore": 83,
+    "checklistSnapshot": [
+      {
+        "idx": 1,
+        "id": 1,
+        "section": "Fundamental Analysis",
+        "text": "Is there any News today that could effect the Market or Trade?",
+        "hardStop": false,
+        "failOn": "yes",
+        "answer": "no"
+      },
+      {
+        "idx": 2,
+        "id": 2,
+        "section": "Psychology",
+        "text": "Are you prepared to risk 1-2% and withen the weekly 3% drawdown?",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 3,
+        "id": 3,
+        "section": "Bias & Confluence",
+        "text": "Do you have at least one Confluence to work with?",
+        "hardStop": false,
+        "failOn": "no",
+        "answer": "no"
+      },
+      {
+        "idx": 4,
+        "id": 4,
+        "section": "Timing & Entry",
+        "text": "Are we withen the preperation window 8:00 - 9:30EST?",
+        "hardStop": false,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 5,
+        "id": 5,
+        "section": "Execution Prep",
+        "text": "Are your stop-loss and take-profit orders prepared? (1/4 RR, At minimum 1/2 RR)",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 6,
+        "id": 6,
+        "section": "Entry Trigger",
+        "text": "At or near the midpoint, Do you see a valid Re-Test Confirmation forming?",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      }
+    ],
+    "checklistPassed": true,
+    "failReason": null,
+    "updatedAt": "2025-12-29T17:33:37.618Z"
+  },
+  {
+    "id": 1766500514277,
+    "timestamp": "2025-12-23T14:32:00.000Z",
+    "symbol": "MES",
+    "direction": "Short",
+    "instrumentId": "MES",
+    "contracts": 1,
+    "entry": "6927",
+    "sl": "6939.50",
+    "tp1": "6887",
+    "tp2": null,
+    "result": "Loss",
+    "rMultiple": null,
+    "pnl": -66.5,
+    "pnlSource": "auto",
+    "commission": 4,
+    "commissionSource": "instrument",
+    "notes": "Extremely odd price action here, We had a strong push to the down side at 8:35 EST. I set my limit order and a god candle filled the order and went all the way to previous session highs. we are now consolidating. Blew past previous session highs and hit SL. Really don't know what caused this price action. I felt pretty confident. EOD UPDATE: It was totally the news, That should have been predictable",
+    "tags": [
+      "ORB",
+      "C- Setup",
+      "News Day",
+      "Prelim GDP",
+      "My fault"
+    ],
+    "checklistKey": "orb",
+    "checklistName": "ORB Midpoint Checklist",
+    "checklistScore": 83,
+    "checklistSnapshot": [
+      {
+        "idx": 1,
+        "id": 1,
+        "section": "Fundamental Analysis",
+        "text": "Is there any News today that could effect the Market or Trade?",
+        "hardStop": false,
+        "failOn": "yes",
+        "answer": "yes"
+      },
+      {
+        "idx": 2,
+        "id": 2,
+        "section": "Psychology",
+        "text": "Are you prepared to risk 1-2% and withen the weekly 3% drawdown?",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 3,
+        "id": 3,
+        "section": "Bias & Confluence",
+        "text": "Do you have at least one Confluence to work with?",
+        "hardStop": false,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 4,
+        "id": 4,
+        "section": "Timing & Entry",
+        "text": "Are we withen the preperation window 8:00 - 9:30EST?",
+        "hardStop": false,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 5,
+        "id": 5,
+        "section": "Execution Prep",
+        "text": "Are your stop-loss and take-profit orders prepared? (1/4 RR, At minimum 1/2 RR)",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 6,
+        "id": 6,
+        "section": "Entry Trigger",
+        "text": "At or near the midpoint, Do you see a valid Re-Test Confirmation forming?",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      }
+    ],
+    "checklistPassed": true,
+    "failReason": null,
+    "updatedAt": "2025-12-23T21:51:14.294Z"
+  },
+  {
+    "id": 1766437934757,
+    "timestamp": "2025-12-22T14:03:00.000Z",
+    "symbol": "MES",
+    "direction": "Long",
+    "instrumentId": "MES",
+    "contracts": 1,
+    "entry": "6915.5",
+    "sl": "6903",
+    "tp1": "6927.5",
+    "tp2": null,
+    "result": "Win",
+    "rMultiple": null,
+    "pnl": 56,
+    "notes": "Setup seemed okay, We had a big push to upside at 8:55, I set my limit order for the midpoint, Got tagged in at 9:39. Rode it down close to stop loss. Price reversed and stalled out about 12 points above the midpoint. Trailed my stop and got filled. Price did not go higher the rest of the day.",
+    "tags": [
+      "ORB",
+      "B- Setup",
+      "Trailing Stop"
+    ],
+    "checklistKey": "orb",
+    "checklistName": "ORB Midpoint Checklist",
+    "checklistScore": 83,
+    "checklistSnapshot": [
+      {
+        "idx": 1,
+        "id": 1,
+        "section": "Fundamental Analysis",
+        "text": "Is there any News today that could effect the Market or Trade?",
+        "hardStop": false,
+        "failOn": "yes",
+        "answer": "no"
+      },
+      {
+        "idx": 2,
+        "id": 2,
+        "section": "Psychology",
+        "text": "Are you prepared to risk 1-2% and withen the weekly 3% drawdown?",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 3,
+        "id": 3,
+        "section": "Bias & Confluence",
+        "text": "Do you have at least one Confluence to work with?",
+        "hardStop": false,
+        "failOn": "no",
+        "answer": "no"
+      },
+      {
+        "idx": 4,
+        "id": 4,
+        "section": "Timing & Entry",
+        "text": "Are we withen the preperation window 8:00 - 9:30EST?",
+        "hardStop": false,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 5,
+        "id": 5,
+        "section": "Execution Prep",
+        "text": "Are your stop-loss and take-profit orders prepared? (1/4 RR, At minimum 1/2 RR)",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 6,
+        "id": 6,
+        "section": "Entry Trigger",
+        "text": "At or near the midpoint, Do you see a valid Re-Test Confirmation forming?",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      }
+    ],
+    "checklistPassed": true,
+    "failReason": null,
+    "updatedAt": "2025-12-22T21:58:37.571Z",
+    "pnlSource": "auto",
+    "commission": 4,
+    "commissionSource": "instrument"
+  },
+  {
+    "id": 1765931712433,
+    "timestamp": "2025-12-16T14:50:00.000Z",
+    "symbol": "MES",
+    "direction": "Short",
+    "instrumentId": "MES",
+    "contracts": 1,
+    "entry": "6872",
+    "sl": "6882",
+    "tp1": "6862.75",
+    "tp2": null,
+    "result": "Win",
+    "rMultiple": null,
+    "pnl": 42.25,
+    "notes": "Setup seemed good, We had two bounces off the mid point after NY open, Got in ran down very close to take profit but reversed. Luckily i trailed my stop loss after a 1/1 RR May need to look at some SL discipline. I think the PMI news caused the reversal. EOD UPDATE: Should have trusted the process, My targets ended up getting hit but OG stop loss was safe",
+    "tags": [
+      "ORB",
+      "Trailing Stop",
+      "News day",
+      "PMI News"
+    ],
+    "checklistKey": "orb",
+    "checklistName": "ORB Midpoint Checklist",
+    "checklistScore": 67,
+    "checklistSnapshot": [
+      {
+        "idx": 1,
+        "id": 1,
+        "section": "Fundamental Analysis",
+        "text": "Is there any News today that could effect the Market or Trade?",
+        "hardStop": false,
+        "failOn": "yes",
+        "answer": "yes"
+      },
+      {
+        "idx": 2,
+        "id": 2,
+        "section": "Psychology",
+        "text": "Are you prepared to risk 1-2% and withen the weekly 3% drawdown?",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 3,
+        "id": 3,
+        "section": "Bias & Confluence",
+        "text": "Do you have at least one Confluence to work with?",
+        "hardStop": false,
+        "failOn": "no",
+        "answer": "no"
+      },
+      {
+        "idx": 4,
+        "id": 4,
+        "section": "Timing & Entry",
+        "text": "Are we withen the preperation window 8:00 - 9:30EST?",
+        "hardStop": false,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 5,
+        "id": 5,
+        "section": "Execution Prep",
+        "text": "Are your stop-loss and take-profit orders prepared? (1/4 RR, At minimum 1/2 RR)",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 6,
+        "id": 6,
+        "section": "Entry Trigger",
+        "text": "At or near the midpoint, Do you see a valid Re-Test Confirmation forming?",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      }
+    ],
+    "checklistPassed": true,
+    "failReason": null,
+    "updatedAt": "2025-12-22T21:58:46.490Z",
+    "pnlSource": "auto",
+    "commission": 4,
+    "commissionSource": "instrument"
+  },
+  {
+    "id": 1765931802918,
+    "timestamp": "2025-12-11T16:15:00.000Z",
+    "symbol": "MES",
+    "direction": "Short",
+    "instrumentId": "MES",
+    "contracts": 2,
+    "entry": "6870.75",
+    "sl": "6882",
+    "tp1": "6851.25",
+    "tp2": null,
+    "result": "Win",
+    "rMultiple": null,
+    "pnl": 187,
+    "notes": "A+ Setup on Midpoint ORB, Targeting London and Asia Session lows for a 1/4 RR,I did Fomo into another Contract right before my Limit order at the mid point was hit, Probably should have waited for the Limit order. Ended up trailing my stop down and got filled for basically a 1/2 RR before price shot right back up past my initial SL",
+    "tags": [
+      "ORB",
+      "A+ setup",
+      "Trailing Stop",
+      "FOMO"
+    ],
+    "checklistKey": "orb",
+    "checklistName": "ORB Midpoint Checklist",
+    "checklistScore": 100,
+    "checklistSnapshot": [
+      {
+        "idx": 1,
+        "id": 1,
+        "section": "Fundamental Analysis",
+        "text": "Is there any News today that could effect the Market or Trade?",
+        "hardStop": false,
+        "failOn": "yes",
+        "answer": "no"
+      },
+      {
+        "idx": 2,
+        "id": 2,
+        "section": "Psychology",
+        "text": "Are you prepared to risk 1-2% and withen the weekly 3% drawdown?",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 3,
+        "id": 3,
+        "section": "Bias & Confluence",
+        "text": "Do you have at least one Confluence to work with?",
+        "hardStop": false,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 4,
+        "id": 4,
+        "section": "Timing & Entry",
+        "text": "Are we withen the preperation window 8:00 - 9:30EST?",
+        "hardStop": false,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 5,
+        "id": 5,
+        "section": "Execution Prep",
+        "text": "Are your stop-loss and take-profit orders prepared? (1/4 RR, At minimum 1/2 RR)",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 6,
+        "id": 6,
+        "section": "Entry Trigger",
+        "text": "At or near the midpoint, Do you see a valid Re-Test Confirmation forming?",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      }
+    ],
+    "checklistPassed": true,
+    "failReason": null,
+    "updatedAt": "2025-12-22T21:58:59.789Z",
+    "pnlSource": "auto",
+    "commission": 8,
+    "commissionSource": "instrument"
+  }
+]
