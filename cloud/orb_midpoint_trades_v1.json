@@ -1,5 +1,90 @@
 [
   {
+    "id": 1767625042859,
+    "timestamp": "2026-01-05T13:30:00.000Z",
+    "symbol": "MES",
+    "direction": "Short",
+    "instrumentId": "MES",
+    "contracts": 3,
+    "entry": "6919.50",
+    "sl": "6932.25",
+    "tp1": null,
+    "tp2": null,
+    "result": "Loss",
+    "rMultiple": null,
+    "pnl": -197.25,
+    "pnlSource": "auto",
+    "commission": 6,
+    "commissionSource": "instrument",
+    "notes": "Saw a Retest at like 6:30AM, I think the main failure point on this trade was some unknown news over the weekend about a US > Venezuela Bombing. I sized up to the Eval Position size of 3 contracts. Got stopped out at my 12 point loss. Going forward for all Monday Trades i need to review the weekend news Sunday night, Baby girls idea. Wondering if i need to wait until a little closer to new york open to jump in instead of so early. Hard to tell what's enough volume to get in before NY open.",
+    "tags": [
+      "ORB",
+      "Poor Setup"
+    ],
+    "checklistKey": "orb",
+    "checklistName": "ORB Midpoint Checklist",
+    "checklistScore": 67,
+    "checklistSnapshot": [
+      {
+        "idx": 1,
+        "id": 1,
+        "section": "Fundamental Analysis",
+        "text": "Is there any News today that could effect the Market or Trade?",
+        "hardStop": false,
+        "failOn": "yes",
+        "answer": "yes"
+      },
+      {
+        "idx": 2,
+        "id": 2,
+        "section": "Psychology",
+        "text": "Are you prepared to risk 1-2% and withen the weekly 3% drawdown?",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 3,
+        "id": 3,
+        "section": "Bias & Confluence",
+        "text": "Do you have at least one Confluence to work with?",
+        "hardStop": false,
+        "failOn": "no",
+        "answer": "no"
+      },
+      {
+        "idx": 4,
+        "id": 4,
+        "section": "Timing & Entry",
+        "text": "Are we withen the preperation window 8:00 - 9:30EST?",
+        "hardStop": false,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 5,
+        "id": 5,
+        "section": "Execution Prep",
+        "text": "Are your stop-loss and take-profit orders prepared? (1/4 RR, At minimum 1/2 RR)",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 6,
+        "id": 6,
+        "section": "Entry Trigger",
+        "text": "At or near the midpoint, Do you see a valid Re-Test Confirmation forming?",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      }
+    ],
+    "checklistPassed": true,
+    "failReason": null,
+    "updatedAt": "2026-01-05T14:57:22.859Z"
+  },
+  {
     "id": 1767380545028,
     "timestamp": "2026-01-02T13:50:00.000Z",
     "symbol": "MES",
