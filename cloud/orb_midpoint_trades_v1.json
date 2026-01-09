@@ -10,7 +10,7 @@
     "sl": null,
     "tp1": null,
     "tp2": null,
-    "result": "Pending",
+    "result": "Win",
     "rMultiple": null,
     "pnl": 133.05,
     "pnlSource": "manual",
@@ -82,7 +82,7 @@
     ],
     "checklistPassed": true,
     "failReason": null,
-    "updatedAt": "2026-01-09T00:04:47.095Z"
+    "updatedAt": "2026-01-09T00:04:57.237Z"
   },
   {
     "id": 1767711978784,
