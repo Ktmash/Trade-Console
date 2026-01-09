@@ -1,5 +1,90 @@
 [
   {
+    "id": 1767917087095,
+    "timestamp": "2026-01-08T14:31:00.000Z",
+    "symbol": "MES",
+    "direction": "Long",
+    "instrumentId": "MES",
+    "contracts": 3,
+    "entry": "6950.75",
+    "sl": null,
+    "tp1": null,
+    "tp2": null,
+    "result": "Pending",
+    "rMultiple": null,
+    "pnl": 133.05,
+    "pnlSource": "manual",
+    "commission": 6,
+    "commissionSource": "instrument",
+    "notes": "Day number 4!!! This one was wild, I had a perfect Retest at the midpoint and a really good entry. Right after entering i hopped in a Stream and heard NQ was completely dumping when i just longed ES... Es did some very bad and choppy price action dropping all the way past the orb close to my 12 point stop and would retrace back up to around 15 points above. I tried to be paitent and see if we could do a little better but after we retraced to my mid point again and stalled out again 15 points up i clipped on contract off while in a meeting at work waited a little longer and basically the same thing happened again so i clipped the last two contracts off securing a win. EOD UPDATE: Price did not do really any better later in the day, I am very happy with my exit.",
+    "tags": [
+      "ORB",
+      "B- Setup"
+    ],
+    "checklistKey": "orb",
+    "checklistName": "ORB Midpoint Checklist",
+    "checklistScore": 83,
+    "checklistSnapshot": [
+      {
+        "idx": 1,
+        "id": 1,
+        "section": "Fundamental Analysis",
+        "text": "Is there any News today that could effect the Market or Trade?",
+        "hardStop": false,
+        "failOn": "yes",
+        "answer": "no"
+      },
+      {
+        "idx": 2,
+        "id": 2,
+        "section": "Psychology",
+        "text": "Are you prepared to risk 1-2% and withen the weekly 3% drawdown?",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 3,
+        "id": 3,
+        "section": "Bias & Confluence",
+        "text": "Do you have at least one Confluence to work with?",
+        "hardStop": false,
+        "failOn": "no",
+        "answer": "no"
+      },
+      {
+        "idx": 4,
+        "id": 4,
+        "section": "Timing & Entry",
+        "text": "Are we withen the preperation window 8:00 - 9:30EST?",
+        "hardStop": false,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 5,
+        "id": 5,
+        "section": "Execution Prep",
+        "text": "Are your stop-loss and take-profit orders prepared? (1/4 RR, At minimum 1/2 RR)",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 6,
+        "id": 6,
+        "section": "Entry Trigger",
+        "text": "At or near the midpoint, Do you see a valid Re-Test Confirmation forming?",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      }
+    ],
+    "checklistPassed": true,
+    "failReason": null,
+    "updatedAt": "2026-01-09T00:04:47.095Z"
+  },
+  {
     "id": 1767711978784,
     "timestamp": "2026-01-06T14:35:00.000Z",
     "symbol": "MES",
