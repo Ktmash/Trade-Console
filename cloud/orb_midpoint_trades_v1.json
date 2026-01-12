@@ -10,7 +10,7 @@
     "sl": null,
     "tp1": null,
     "tp2": null,
-    "result": "Win",
+    "result": "Breakeven",
     "rMultiple": null,
     "pnl": 3.15,
     "pnlSource": "manual",
@@ -28,7 +28,7 @@
     "checklistSnapshot": null,
     "checklistPassed": null,
     "failReason": null,
-    "updatedAt": "2026-01-12T18:02:54.041Z"
+    "updatedAt": "2026-01-12T18:03:32.709Z"
   },
   {
     "id": 1767971012993,
