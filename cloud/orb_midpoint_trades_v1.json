@@ -1,5 +1,36 @@
 [
   {
+    "id": 1768238284051,
+    "timestamp": "2026-01-12T15:56:00.000Z",
+    "symbol": "MES",
+    "direction": "Long",
+    "instrumentId": "MES",
+    "contracts": 1,
+    "entry": null,
+    "sl": null,
+    "tp1": null,
+    "tp2": null,
+    "result": "Breakeven",
+    "rMultiple": null,
+    "pnl": 2,
+    "pnlSource": "manual",
+    "commission": 2,
+    "commissionSource": "instrument",
+    "notes": "Day number 6!!! Tried to take a risk today, NY open shot up with no retest at all of the ORB. We got up to a point of consolidation i had conviction it was going to retrace back down to the mid point, It did not. I ended up taking a loss on a short, I panicked and flipped my position at 7002 and went long until 10:16am Where my trailed Stop ended up getting hit. I think there is opportunity for these additional entries after the ORB but we need a lot of practice.",
+    "tags": [
+      "FOMO",
+      "Rule break",
+      "Trailing Stop"
+    ],
+    "checklistKey": null,
+    "checklistName": null,
+    "checklistScore": null,
+    "checklistSnapshot": null,
+    "checklistPassed": null,
+    "failReason": null,
+    "updatedAt": "2026-01-12T17:18:04.052Z"
+  },
+  {
     "id": 1767971012993,
     "timestamp": "2026-01-09T14:52:00.000Z",
     "symbol": "MES",
