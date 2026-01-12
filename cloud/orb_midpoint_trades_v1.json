@@ -12,7 +12,7 @@
     "tp2": null,
     "result": "Breakeven",
     "rMultiple": null,
-    "pnl": 4,
+    "pnl": 2.45,
     "pnlSource": "manual",
     "commission": 2,
     "commissionSource": "instrument",
@@ -28,7 +28,7 @@
     "checklistSnapshot": null,
     "checklistPassed": null,
     "failReason": null,
-    "updatedAt": "2026-01-12T17:18:33.915Z"
+    "updatedAt": "2026-01-12T17:19:18.987Z"
   },
   {
     "id": 1767971012993,
