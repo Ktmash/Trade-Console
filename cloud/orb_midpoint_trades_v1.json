@@ -1,5 +1,36 @@
 [
   {
+    "id": 1768317712396,
+    "timestamp": "2026-01-13T15:01:00.000Z",
+    "symbol": "MES",
+    "direction": "Short",
+    "instrumentId": "MES",
+    "contracts": 1,
+    "entry": "7005.00",
+    "sl": null,
+    "tp1": null,
+    "tp2": null,
+    "result": "Win",
+    "rMultiple": null,
+    "pnl": 19.95,
+    "pnlSource": "manual",
+    "commission": 2,
+    "commissionSource": "instrument",
+    "notes": "Day number 7!!!! So, Today we had news at 6:30 that shot price up pretty high, Waited for a Retrace back down to the ORB midpoint, We tapped it a few times i wanted one more confirmation and ended up disrespecting it. Once the price was disrespected i looked to Short to the bottom of the News candle at 6:30, That worked out perfectly. We actually kept going down, i could have held the short longer.",
+    "tags": [
+      "News day",
+      "Manual Trade",
+      "Confluence"
+    ],
+    "checklistKey": null,
+    "checklistName": null,
+    "checklistScore": null,
+    "checklistSnapshot": null,
+    "checklistPassed": null,
+    "failReason": null,
+    "updatedAt": "2026-01-13T15:21:52.396Z"
+  },
+  {
     "id": 1768238284051,
     "timestamp": "2026-01-12T15:56:00.000Z",
     "symbol": "MES",
