@@ -1,5 +1,91 @@
 [
   {
+    "id": 1768405818654,
+    "timestamp": "2026-01-14T14:34:00.000Z",
+    "symbol": "MES",
+    "direction": "Short",
+    "instrumentId": "MES",
+    "contracts": 3,
+    "entry": "6974",
+    "sl": "6986",
+    "tp1": "6956",
+    "tp2": "6950",
+    "result": "Win",
+    "rMultiple": null,
+    "pnl": 319.3,
+    "pnlSource": "manual",
+    "commission": 6,
+    "commissionSource": "instrument",
+    "notes": "Day number 8!!! Today i feel like this was my best trade yet, I stuck to my rules all the way through entry and a little draw down. I need to remember to only use 1 minute charts for entries and not for exits, That almost got me. I did clip one contract off after 1RR i held on to the other 2 contracts down to a key level and sold both off. I had two key levels marked out to the downside to take profit at and i am now seeing both levels are getting hit. I need to learn how to determine if a reversal is happening at level A or Level B. I still feel like this was my best trade ever, Good job bro.",
+    "tags": [
+      "ORB",
+      "A+ setup",
+      "News day"
+    ],
+    "checklistKey": "orb",
+    "checklistName": "ORB Midpoint Checklist",
+    "checklistScore": 67,
+    "checklistSnapshot": [
+      {
+        "idx": 1,
+        "id": 1,
+        "section": "Fundamental Analysis",
+        "text": "Is there any News today that could effect the Market or Trade?",
+        "hardStop": false,
+        "failOn": "yes",
+        "answer": "yes"
+      },
+      {
+        "idx": 2,
+        "id": 2,
+        "section": "Psychology",
+        "text": "Are you prepared to risk 1-2% and withen the weekly 3% drawdown?",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 3,
+        "id": 3,
+        "section": "Bias & Confluence",
+        "text": "Do you have at least one Confluence to work with?",
+        "hardStop": false,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 4,
+        "id": 4,
+        "section": "Timing & Entry",
+        "text": "Are we withen the preperation window 8:00 - 9:30EST?",
+        "hardStop": false,
+        "failOn": "no",
+        "answer": "no"
+      },
+      {
+        "idx": 5,
+        "id": 5,
+        "section": "Execution Prep",
+        "text": "Are your stop-loss and take-profit orders prepared? (1/4 RR, At minimum 1/2 RR)",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 6,
+        "id": 6,
+        "section": "Entry Trigger",
+        "text": "At or near the midpoint, Do you see a valid Re-Test Confirmation forming?",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      }
+    ],
+    "checklistPassed": true,
+    "failReason": null,
+    "updatedAt": "2026-01-14T15:50:18.654Z"
+  },
+  {
     "id": 1768317712396,
     "timestamp": "2026-01-13T15:01:00.000Z",
     "symbol": "MES",
