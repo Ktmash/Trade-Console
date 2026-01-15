@@ -1,6 +1,6 @@
 {
   "dollarsPerR": 50,
-  "pnlBlurred": false,
+  "pnlBlurred": true,
   "instruments": [
     {
       "id": "MES",
@@ -127,5 +127,5 @@
     }
   ],
   "lastChecklistKey": "orb",
-  "updatedAt": "2026-01-15T19:49:58.705Z"
+  "updatedAt": "2026-01-15T19:50:04.141Z"
 }
