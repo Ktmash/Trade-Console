@@ -1,6 +1,6 @@
 {
   "dollarsPerR": 50,
-  "pnlBlurred": true,
+  "pnlBlurred": false,
   "instruments": [
     {
       "id": "MES",
@@ -127,5 +127,5 @@
     }
   ],
   "lastChecklistKey": "generic",
-  "updatedAt": "2026-01-16T15:58:53.411Z"
+  "updatedAt": "2026-01-16T16:01:08.604Z"
 }
