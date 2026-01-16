@@ -1,5 +1,80 @@
 [
   {
+    "id": 1768579127353,
+    "timestamp": "2026-01-16T14:52:00.000Z",
+    "symbol": "MES",
+    "direction": "Short",
+    "instrumentId": "MES",
+    "contracts": 3,
+    "entry": "6978.25",
+    "sl": "6989",
+    "tp1": "6969.25",
+    "tp2": "6968.50",
+    "result": "Win",
+    "rMultiple": null,
+    "pnl": 129,
+    "pnlSource": "auto",
+    "commission": 6,
+    "commissionSource": "instrument",
+    "notes": "This was my one allowed \"Redo\" After we blew past the midpoint i looked for another key level, I found a low yesterday that we wicked out and retested again. I went ahead and jumped in for 3 shorts. This was very dangerous it seems due to volatility i had my stop loss way up in the orb incase we had to test it again to drop lower, Which we did. I went HEAVY into Drawdown but stayed disciplined and the trade reversed back down and worked out in my favor. I found another low we started to stall out aroun dso i clipped on contract off and waited to see but we kept retesting so i set my Stop loss to that point and it got tested again and price went back up to the upside.",
+    "tags": [
+      "Second Try"
+    ],
+    "checklistKey": "generic",
+    "checklistName": "Generic Checklist",
+    "checklistScore": 100,
+    "checklistSnapshot": [
+      {
+        "idx": 1,
+        "id": 1,
+        "section": "Context",
+        "text": "Is price action aligned with the higher timeframe bias and are you trading in that direction (not counter-trend revenge)?",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 2,
+        "id": 2,
+        "section": "Level & Trigger",
+        "text": "Are you entering at a meaningful level (HTF level, clear liquidity area, FVG, etc.) with a clean trigger candle or pattern?",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 3,
+        "id": 3,
+        "section": "Risk & R/R",
+        "text": "Is your stop in a logical place (not arbitrary) and is the reward-to-risk at least 2R with room for price to move cleanly?",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 4,
+        "id": 4,
+        "section": "News & Session Rules",
+        "text": "Are you inside your allowed trading window and free of major news or random chop times for this instrument?",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 5,
+        "id": 5,
+        "section": "Psychology & Daily Limits",
+        "text": "Are you calm, not tilted, and still inside your daily loss / max trades limits (no chasing, no FOMO, no 'one more')?",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      }
+    ],
+    "checklistPassed": true,
+    "failReason": null,
+    "updatedAt": "2026-01-16T15:58:47.353Z"
+  },
+  {
     "id": 1768578821975,
     "timestamp": "2026-01-16T14:51:00.000Z",
     "symbol": "MES",
