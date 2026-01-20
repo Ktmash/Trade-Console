@@ -1,5 +1,36 @@
 [
   {
+    "id": 1768920229997,
+    "timestamp": "2026-01-20T14:41:00.000Z",
+    "symbol": "MES",
+    "direction": "Short",
+    "instrumentId": "MES",
+    "contracts": 2,
+    "entry": null,
+    "sl": null,
+    "tp1": null,
+    "tp2": null,
+    "result": "Loss",
+    "rMultiple": null,
+    "pnl": -18.25,
+    "pnlSource": "manual",
+    "commission": 4,
+    "commissionSource": "instrument",
+    "notes": "Today was a good day! However, I made a lot of mistakes. I Longed when i meant to short and quickly closed the position and reopened the correct trade and i was a little emotional so i de risked and got tagged out. I think this was all caused by sitting down 1 minute before market open. I need to be more prepared and not try to make a bias in 30 seconds. Along with i need mor reptations actually trading and using TV. Maybe lo ok into bracket orders?",
+    "tags": [
+      "Rule break",
+      "FOMO",
+      "Overtraded"
+    ],
+    "checklistKey": null,
+    "checklistName": null,
+    "checklistScore": null,
+    "checklistSnapshot": null,
+    "checklistPassed": null,
+    "failReason": null,
+    "updatedAt": "2026-01-20T14:43:49.997Z"
+  },
+  {
     "id": 1768579127353,
     "timestamp": "2026-01-16T14:52:00.000Z",
     "symbol": "MES",
