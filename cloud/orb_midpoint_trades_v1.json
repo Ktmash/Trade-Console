@@ -1,5 +1,37 @@
 [
   {
+    "id": 1769022284979,
+    "timestamp": "2026-01-21T19:00:00.000Z",
+    "symbol": "MES",
+    "direction": "Long",
+    "instrumentId": "MES",
+    "contracts": 3,
+    "entry": null,
+    "sl": null,
+    "tp1": null,
+    "tp2": null,
+    "result": "Cancelled",
+    "rMultiple": null,
+    "pnl": null,
+    "pnlSource": null,
+    "commission": 6,
+    "commissionSource": "instrument",
+    "notes": "You know why you are journaling today. We recognized the market was not going to respect the orb early in the morning and decided to put away the main Eval. Pulled out the secondary account and placed the same Orb trade with full risk and we got stopped out pretty quick. Placed another couple trades all pretty much loosing until we caught the long off of Overnight high to previous day high hoping we would have filled the opening week gap but we did not make it, Reversed and hit my stop bringing the account back to 50k from 4,800. Trump kept talking throughout the day and we tried a couple more low risk trades trying to nail the top side of a big sell off but ended up consolidating. Ending the day with a loss over all. Learned a lot! You will def remember how upset Britt was with you for over trading.",
+    "tags": [
+      "Overtraded",
+      "Rule break",
+      "News day",
+      "FOMO"
+    ],
+    "checklistKey": null,
+    "checklistName": null,
+    "checklistScore": null,
+    "checklistSnapshot": null,
+    "checklistPassed": null,
+    "failReason": null,
+    "updatedAt": "2026-01-21T19:04:44.979Z"
+  },
+  {
     "id": 1768920229997,
     "timestamp": "2026-01-20T14:41:00.000Z",
     "symbol": "MES",
