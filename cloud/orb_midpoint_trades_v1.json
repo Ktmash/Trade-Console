@@ -1,5 +1,35 @@
 [
   {
+    "id": 1769093699928,
+    "timestamp": "2026-01-22T14:48:00.000Z",
+    "symbol": "MES",
+    "direction": "Long",
+    "instrumentId": "MES",
+    "contracts": 1,
+    "entry": "6956.00",
+    "sl": "6945.75",
+    "tp1": null,
+    "tp2": null,
+    "result": "Loss",
+    "rMultiple": null,
+    "pnl": -53.25,
+    "pnlSource": "auto",
+    "commission": 2,
+    "commissionSource": "instrument",
+    "notes": "Will come back to this journal later, we Had a big push up before open again i went ahead and did something i have never done and entered at NY open with a 50 dollar stop. we went to profit a little and came back down, respected the mid point once and then blew past it.",
+    "tags": [
+      "ORB",
+      "News day"
+    ],
+    "checklistKey": null,
+    "checklistName": null,
+    "checklistScore": null,
+    "checklistSnapshot": null,
+    "checklistPassed": null,
+    "failReason": null,
+    "updatedAt": "2026-01-22T14:54:59.928Z"
+  },
+  {
     "id": 1769022284979,
     "timestamp": "2026-01-21T19:00:00.000Z",
     "symbol": "MES",
