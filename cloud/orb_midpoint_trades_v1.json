@@ -1,5 +1,89 @@
 [
   {
+    "id": 1772203322291,
+    "timestamp": "2026-02-27T14:40:00.000Z",
+    "symbol": "MES",
+    "direction": "Short",
+    "instrumentId": "MES",
+    "contracts": 1,
+    "entry": "6858",
+    "sl": "6867",
+    "tp1": null,
+    "tp2": null,
+    "result": "Loss",
+    "rMultiple": null,
+    "pnl": -47,
+    "pnlSource": "auto",
+    "commission": 2,
+    "commissionSource": "instrument",
+    "notes": "Dont have many notes for this one, Typical break out. May have entered to early due to Chop, As i am writing this Matt is telling us how ORB is very hard for Trailing DD accounts like i have.",
+    "tags": [
+      "ORB"
+    ],
+    "checklistKey": "orb",
+    "checklistName": "ORB Midpoint Checklist",
+    "checklistScore": 67,
+    "checklistSnapshot": [
+      {
+        "idx": 1,
+        "id": 1,
+        "section": "Fundamental Analysis",
+        "text": "Is there any News today that could effect the Market or Trade?",
+        "hardStop": false,
+        "failOn": "yes",
+        "answer": "yes"
+      },
+      {
+        "idx": 2,
+        "id": 2,
+        "section": "Psychology",
+        "text": "Are you prepared to risk 1-2% and withen the weekly 3% drawdown?",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 3,
+        "id": 3,
+        "section": "Bias & Confluence",
+        "text": "Do you have at least one Confluence to work with?",
+        "hardStop": false,
+        "failOn": "no",
+        "answer": "no"
+      },
+      {
+        "idx": 4,
+        "id": 4,
+        "section": "Timing & Entry",
+        "text": "Are we withen the preperation window 8:00 - 9:30EST?",
+        "hardStop": false,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 5,
+        "id": 5,
+        "section": "Execution Prep",
+        "text": "Are your stop-loss and take-profit orders prepared? (1/4 RR, At minimum 1/2 RR)",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      },
+      {
+        "idx": 6,
+        "id": 6,
+        "section": "Entry Trigger",
+        "text": "At or near the midpoint, Do you see a valid Re-Test Confirmation forming?",
+        "hardStop": true,
+        "failOn": "no",
+        "answer": "yes"
+      }
+    ],
+    "checklistPassed": true,
+    "failReason": null,
+    "updatedAt": "2026-02-27T14:42:02.291Z"
+  },
+  {
     "id": 1772116297714,
     "timestamp": "2026-02-26T14:30:00.000Z",
     "symbol": "MES",
